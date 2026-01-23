@@ -1,0 +1,388 @@
+/* 弹窗基础样式 */
+.modal {
+    position: absolute; /* 相对于 stage-wrapper 定位 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    border-radius: inherit; /* 跟随 wrapper 的圆角 */
+}
+
+.modal.hidden {
+    opacity: 0;
+    pointer-events: none;
+    display: none; /* 防止遮挡 */
+}
+
+.modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    /* Chrome 59 不支持 backdrop-filter，添加回退方案：更深的背景色 */
+    background-color: rgba(0, 0, 0, 0.85); 
+    backdrop-filter: blur(2px); /* 如果支持则生效 */
+    border-radius: inherit;
+}
+
+@supports (backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px)) {
+    .modal-overlay {
+        background-color: rgba(0, 0, 0, 0.6);
+        -webkit-backdrop-filter: blur(2px);
+        backdrop-filter: blur(2px);
+    }
+}
+
+.modal-content {
+    position: relative;
+    width: 98%; /* 撑满舞台 */
+    height: 92%; /* 调整高度比例，适配附图 */
+    background: transparent;
+    z-index: 101;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-origin: center center;
+}
+
+/* 卡片主体 */
+.card-body {
+    display: flex;
+    width: 100%;
+    flex: 1; /* 占据剩余空间 */
+    background: white;
+    border-radius: 0.16rem;   /* 16px -> 0.16rem */
+    overflow: hidden;
+    box-shadow: 0 0.2rem 0.6rem rgba(0,0,0,0.5);
+    transform: scale(0.8);
+    opacity: 0;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popIn {
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* 左侧：动态贺图区 */
+.card-left {
+    flex: 1.2;
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0.1rem;          /* 10px -> 0.1rem */
+    border-right: 1px solid #ddd;
+    position: relative;
+}
+
+.frame-player-container {
+    width: 100%;
+    height: 100%;
+    max-width: 5rem;          /* 500px -> 5rem */
+    border: 0.04rem solid #ff9800; /* 4px -> 0.04rem */
+    border-radius: 0.08rem;   /* 8px -> 0.08rem */
+    box-shadow: 0 0.1rem 0.2rem rgba(0,0,0,0.1);
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+#frame-canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 提示词按钮 (!) */
+.info-button {
+    position: absolute;
+    top: 0.1rem;
+    right: 0.1rem;
+    width: 0.32rem;
+    height: 0.32rem;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.18rem;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.info-button:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.1);
+}
+
+/* 视图切换逻辑 */
+.view-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.view-hidden {
+    display: none !important;
+}
+
+/* 提示词视图样式 (Tech Style) */
+#view-prompt {
+    background: #0a0a0a; /* 更深的背景 */
+    border: 0.04rem solid #ff9800; /* 橙色外边框 */
+    border-radius: 0.12rem;
+    padding: 0.25rem;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+    font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+/* 顶部网格信息 */
+.prompt-header-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.15rem;
+    border-bottom: 1px solid rgba(255, 152, 0, 0.3);
+    padding-bottom: 0.15rem;
+    margin-bottom: 0.2rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-item label {
+    font-size: 0.12rem;
+    color: #ff9800;
+    text-transform: uppercase;
+    letter-spacing: 0.01rem;
+    margin-bottom: 0.04rem;
+    opacity: 0.8;
+}
+
+.info-item span {
+    font-size: 0.15rem;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* AI 提示词容器 */
+.ai-prompt-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.ai-label {
+    font-size: 0.14rem;
+    color: #ff9800;
+    margin-bottom: 0.1rem;
+    font-weight: bold;
+}
+
+.ai-content-box {
+    font-size: 0.14rem;
+    line-height: 1.5;
+    color: #ccc;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.15rem;
+    border-radius: 0.08rem;
+    border-left: 0.04rem solid #ff9800;
+    min-height: 1.2rem;
+}
+
+/* 悬浮进度条样式 - REM 化 */
+.slider-control.floating-slider {
+    position: absolute;
+    bottom: 0.1rem;           /* 10px -> 0.1rem */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    background: rgba(0, 0, 0, 0.85); /* 回退：深色背景 */
+    padding: 0.05rem 0.1rem;  /* 5px 10px */
+    border-radius: 0.15rem;   /* 15px */
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+@supports (backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px)) {
+    .slider-control.floating-slider {
+        background: rgba(0, 0, 0, 0.5);
+        -webkit-backdrop-filter: blur(4px);
+        backdrop-filter: blur(4px);
+    }
+}
+
+.frame-player-container:hover .slider-control.floating-slider {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .slider-control.floating-slider {
+        opacity: 1;
+    }
+}
+
+input[type=range] {
+    width: 100%;
+    cursor: pointer;
+    background: transparent;
+    height: 0.06rem;          /* 6px -> 0.06rem */
+    -webkit-appearance: none;
+    margin: 0;
+    padding: 0;
+    display: block;
+}
+
+/* 轨道样式适配 */
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 0.06rem;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 0.03rem;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 0.16rem;          /* 16px -> 0.16rem */
+    width: 0.16rem;
+    border-radius: 50%;
+    background: #ff9800;
+    border: 2px solid #fff;
+    margin-top: -0.05rem;     /* -5px -> -0.05rem */
+    box-shadow: 0 0 0.05rem rgba(0,0,0,0.3);
+}
+
+/* 右侧：明信片文本区 - REM 化 */
+.card-right {
+    flex: 0.8;
+    background: #fff url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNlZWUiLz4KPC9zdmc+');
+    padding: 0.4rem;          /* 40px -> 0.4rem */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.postcard-content {
+    flex: 1;
+    font-family: "Songti SC", "SimSun", serif;
+    color: #333;
+}
+
+.field-to {
+    font-size: 0.18rem;       /* 缩小字号 */
+    margin-bottom: 0.15rem;
+    font-weight: bold;
+    color: #e65100;
+}
+
+.blessing-title-box {
+    text-align: center;
+    margin: 0.2rem 0;
+    position: relative;
+}
+
+.field-pinyin {
+    font-size: 0.14rem;       /* 适当缩小 */
+    color: #f57c00;
+    font-family: "Courier New", Courier, monospace;
+    letter-spacing: 0.02rem;
+    margin-bottom: 0.05rem;
+}
+
+.field-title {
+    font-size: 0.5rem;         /* 极大字号，但相比之前更平衡 */
+    font-weight: 900;
+    color: #fb8c00;
+    letter-spacing: 0.08rem;
+    text-shadow: 0.02rem 0.02rem 0 rgba(0,0,0,0.05);
+}
+
+.field-body {
+    font-size: 0.16rem;       /* 缩小字号 */
+    line-height: 1.6;         /* 稍微减小行高系数以平衡大字号 */
+    margin-bottom: 0.3rem;
+    min-height: 0.8rem;         /* 缩小高度 */
+    border-bottom: 1px dashed #ddd;
+    padding-bottom: 0.2rem;
+}
+
+.field-from {
+    font-size: 0.16rem;       /* 缩小字号 */
+    text-align: right;
+    font-weight: bold;
+}
+
+.postcard-action {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 0.2rem;
+}
+
+.btn-primary {
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    padding: 0.12rem 0.3rem;  /* 12px 30px -> 0.12rem 0.3rem */
+    border-radius: 0.25rem;   /* 25px -> 0.25rem */
+    font-size: 0.16rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0.04rem 0.06rem rgba(255, 152, 0, 0.3);
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.btn-primary:active {
+    transform: scale(0.95);
+    box-shadow: 0 0.02rem 0.04rem rgba(255, 152, 0, 0.2);
+}
+
+/* 响应式适配 */
+@media screen and (max-width: 800px) {
+    /* 这里的 px 需要保留，因为是媒体查询断点 */
+    /* 但内部样式应该尽量用 rem */
+    
+    .card-left {
+        flex: none;
+        height: 3rem;         /* 300px -> 3rem (如果需要的话) */
+        padding: 0.1rem;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .frame-player-container {
+        width: 2.5rem;        /* 250px -> 2.5rem */
+        height: 2.5rem;
+    }
+
+    .card-right {
+        flex: none;
+        padding: 0.2rem;
+    }
+    
+    .notification-bar {
+        font-size: 0.14rem;
+        padding: 0.06rem 0.15rem;
+        margin-bottom: 0.1rem;
+    }
+}

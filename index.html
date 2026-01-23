@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>H5动态贺卡</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/modal.css">
+</head>
+
+<body>
+    <!-- 舞台容器：核心展示区域 -->
+    <div id="stage-container">
+        <!-- 主窗口容器 (New) -->
+        <div id="main-window">
+            <!-- Mac 窗口标题栏装饰 (置顶) -->
+            <div class="mac-title-bar">
+                <div class="mac-buttons">
+                    <span class="mac-btn red"></span>
+                    <span class="mac-btn yellow"></span>
+                    <span class="mac-btn green"></span>
+                </div>
+                <div class="mac-title">动态贺卡</div>
+            </div>
+
+            <!-- 核心舞台包裹层 -->
+            <div id="stage-wrapper">
+                <!-- 封面页 (现在是窗口内的内容) -->
+                <div id="cover-page" class="hidden"> <!-- 初始隐藏，等 Loading 结束后显示 -->
+                    <div class="cover-content">
+                        <div class="cover-title">H5 动态贺卡</div>
+                        <button id="start-btn" class="btn-primary">放飞天灯</button>
+                    </div>
+                </div>
+
+                <!-- 加载遮罩层 (这是第一步显示的) -->
+                <div id="loading-overlay">
+                    <div class="loading-content">
+                        <div class="spinner"></div>
+                        <div id="loading-text" class="loading-text">生成排队中，请稍候……</div>
+                    </div>
+                </div>
+
+                <!-- 背景层 -->
+                <div id="background-layer"></div>
+
+                <!-- 漂浮挂件层 -->
+                <div id="floater-layer"></div>
+
+                <!-- 贺卡弹窗层 (放在 wrapper 内部以受圆角控制) -->
+                <div id="card-modal" class="modal hidden">
+                    <div class="modal-overlay"></div>
+                    <div class="modal-content">
+                        <!-- 卡片主体 -->
+                        <div class="card-body">
+                            <!-- 左侧：动态贺图区 -->
+                            <div class="card-left">
+                                <div class="frame-player-container">
+                                    <canvas id="frame-canvas" width="360" height="480"></canvas>
+                                    <!-- 提示词切换按钮 (!) -->
+                                    <button id="info-btn" class="info-button" title="查看提示词">!</button>
+                                    <!-- 进度条悬浮在贺图底部 -->
+                                    <div class="slider-control floating-slider">
+                                        <input type="range" id="frame-slider" min="1" max="16" value="1" step="1">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 右侧：明信片文本区 -->
+                            <div class="card-right">
+                                <!-- 祝福语视图 -->
+                                <div id="view-greeting" class="view-content">
+                                    <div class="postcard-content">
+                                        <div class="field-to">祝 <span id="card-recipient">妈妈</span>：</div>
+
+                                        <!-- 核心展示：拼音 + 大字标题 -->
+                                        <div class="blessing-title-box">
+                                            <div id="card-pinyin" class="field-pinyin">mèng qù nà fú</div>
+                                            <div id="card-title" class="field-title">萌趣纳福</div>
+                                        </div>
+
+                                        <div class="field-body" id="card-message">
+                                            亲爱的妈妈，愿你诸事顺遂，活力满满，开心每一天~
+                                        </div>
+                                    </div>
+                                    <div class="postcard-action">
+                                        <button id="accept-btn" class="btn-primary">接受祝福</button>
+                                        <div class="mascot-illustration"></div>
+                                    </div>
+                                </div>
+
+                                <!-- 提示词视图 (初始隐藏) -->
+                                <div id="view-prompt" class="view-content view-hidden">
+                                    <div class="prompt-header-grid">
+                                        <div class="info-item">
+                                            <label>输入祝福语</label>
+                                            <span id="prompt-info-text">萌趣纳福</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <label>风格模型</label>
+                                            <span id="prompt-info-style">毛毡卡通风格</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <label>输入收信人</label>
+                                            <span id="prompt-info-recipient">妈妈</span>
+                                        </div>
+                                    </div>
+                                    <div class="ai-prompt-container">
+                                        <div class="ai-label">AI优化后提示词：</div>
+                                        <div id="prompt-ai-content" class="ai-content-box">
+                                            画面中心是憨萌小黄人，抱着彩色糖果蹦跳玩耍...
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 调试面板容器 (Mock System) -->
+    <div id="debug-panel" class="debug-panel collapsed">
+        <!-- 内容由 mock.js 动态生成 -->
+    </div>
+
+    <!-- 脚本引入 -->
+    <script src="js/main.js"></script>
+    <script src="js/floater.js"></script>
+    <script src="js/card.js"></script>
+    <script src="js/mock.js"></script>
+</body>
+
+</html>
