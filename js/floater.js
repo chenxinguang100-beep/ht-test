@@ -71,6 +71,13 @@ const FloaterSystem = {
             img.src = t.image;
         });
 
+        // 预加载星星迸发特效
+        for (let i = 1; i <= 12; i++) {
+            const img = new Image();
+            const num = i.toString().padStart(2, '0');
+            img.src = `assets/关卡道具-星星迸发/道具-星星迸发-xx_${num}.png`;
+        }
+
         this.refresh(window.AppState.config.greeting_words);
     },
 
@@ -223,7 +230,8 @@ const FloaterSystem = {
 
         el.addEventListener('click', (e) => {
             if (!this.isActive) return; // 弹窗打开时禁止重复点击
-            this.createClickEffect(e.clientX, e.clientY);
+            // const currentZ = parseInt(el.style.zIndex) || 10;
+            // this.createClickEffect(e.clientX, e.clientY, currentZ); // 移除立即播放
             this.handleFloaterClick(el, config);
             e.stopPropagation();
         });
@@ -331,43 +339,80 @@ const FloaterSystem = {
         el.style.transform = `translate(${moveX}px, ${moveY}px) scale(2)`;
 
         setTimeout(() => {
-            if (window.CardSystem && typeof window.CardSystem.open === 'function') {
-                window.CardSystem.open(config);
-            }
+            // 移动到位后，播放星星迸发特效
+            // 此时物体在舞台中心，zIndex 为 100
+            this.createClickEffect(stageCenterX, stageCenterY, 100);
 
-            // 绑定关闭回调
-            if (window.CardSystem) {
-                const originalClose = window.CardSystem.onClose;
-                window.CardSystem.onClose = () => {
-                    if (typeof originalClose === 'function') originalClose();
+            // 延迟一点时间再打开贺卡，让特效展示一下
+            setTimeout(() => {
+                if (window.CardSystem && typeof window.CardSystem.open === 'function') {
+                    window.CardSystem.open(config);
+                }
 
-                    // 还原挂件 (恢复原始滤镜和层级)
-                    el.style.transition = 'transform 0.6s ease-out, filter 0.6s ease-out';
-                    el.style.transform = `translate(0, 0) scale(${startScale})`;
-                    el.style.filter = originalFilter;
-                    el.style.zIndex = originalZIndex;
+                // 绑定关闭回调
+                if (window.CardSystem) {
+                    const originalClose = window.CardSystem.onClose;
+                    window.CardSystem.onClose = () => {
+                        if (typeof originalClose === 'function') originalClose();
 
-                    setTimeout(() => {
-                        if (el._anim) el._anim.play(); // 恢复播放
-                        this.isActive = true; // 恢复交互
-                    }, 600);
-                };
-            }
+                        // 还原挂件 (恢复原始滤镜和层级)
+                        el.style.transition = 'transform 0.6s ease-out, filter 0.6s ease-out';
+                        el.style.transform = `translate(0, 0) scale(${startScale})`;
+                        el.style.filter = originalFilter;
+                        el.style.zIndex = originalZIndex;
+
+                        setTimeout(() => {
+                            if (el._anim) el._anim.play(); // 恢复播放
+                            this.isActive = true; // 恢复交互
+                        }, 600);
+                    };
+                }
+            }, 600); // 特效播放由于是 20fps 12帧 ≈ 600ms，这里同步等待
+
         }, 1000);
     },
 
-    createClickEffect(x, y) {
-        const effect = document.createElement('div');
-        effect.className = 'click-effect';
-        effect.style.left = x + 'px';
-        effect.style.top = y + 'px';
-        document.body.appendChild(effect);
+    createClickEffect(x, y, targetZIndex) {
+        if (!this.container) return;
 
-        setTimeout(() => {
-            if (effect.parentNode) {
-                effect.parentNode.removeChild(effect);
+        const effect = document.createElement('div');
+        effect.className = 'star-burst';
+
+        // 计算相对坐标 (处理缩放)
+        const rect = this.container.getBoundingClientRect();
+        const scaleX = rect.width / this.container.offsetWidth;
+        const scale = scaleX || 1;
+
+        const localX = (x - rect.left) / scale;
+        const localY = (y - rect.top) / scale;
+
+        effect.style.left = localX + 'px';
+        effect.style.top = localY + 'px';
+
+        // 层级设为比点击物体低 1 级，确保在物体下方播放
+        effect.style.zIndex = (targetZIndex || 10) - 1;
+
+        this.container.appendChild(effect);
+
+        // 序列帧动画
+        let frame = 1;
+        const maxFrames = 12;
+        const fps = 20; // 适当降速让效果看清楚
+        const interval = 1000 / fps;
+
+        const updateFrame = () => {
+            if (frame > maxFrames) {
+                if (effect.parentNode) effect.parentNode.removeChild(effect);
+                return;
             }
-        }, 600);
+            const num = frame.toString().padStart(2, '0');
+            const path = `assets/关卡道具-星星迸发/道具-星星迸发-xx_${num}.png`;
+            effect.style.backgroundImage = `url('${path}')`;
+            frame++;
+            setTimeout(updateFrame, interval);
+        };
+
+        updateFrame();
     }
 };
 
