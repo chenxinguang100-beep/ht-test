@@ -8,7 +8,7 @@ const AppState = {
     // 当前配置
     config: {
         greeting_words: ['burger', 'horse', 'banana'], // 默认多选
-        card_style: 'pixel_world', // 默认风格更新为像素世界
+        card_style: 'frosted_blindbox', // 默认风格更新为磨砂盲盒
         auto_play: true,
         recipient: '妈妈',
         message_body: '亲爱的妈妈，愿你诸事顺遂，活力满满，开心每一天~',
@@ -16,8 +16,17 @@ const AppState = {
         float_speed: 15 // 飞行速度 (秒)，越小越快
     },
 
+    // 等待消息状态 (借鉴 h5-demo：只有接收到消息才会播放，否则一直 loading)
+    isWaiting: true,
+
     // 初始化
-    init() {
+    async init() {
+        // 先加载配置
+        await this.loadConfig();
+
+        // 初始应用背景
+        this.updateBackground();
+
         this.setupPostMessageListener();
         this.setupResponsiveLayout();
         this.setupGlobalEvents();
@@ -28,8 +37,8 @@ const AppState = {
         // 启动各模块
         if (window.CardSystem) window.CardSystem.init();
 
-        // 启动 Loading 序列
-        this.initLoadingSequence();
+        // 显示初始 Loading 状态，等待消息 (不启动倒计时)
+        this.showWaitingState();
 
         // 绑定封面页按钮事件
         const startBtn = document.getElementById('start-btn');
@@ -45,13 +54,51 @@ const AppState = {
         }
     },
 
+    // 显示等待消息状态 (一直 loading，不自动结束)
+    showWaitingState() {
+        const overlay = document.getElementById('loading-overlay');
+        const overlayText = document.getElementById('loading-text');
+
+        if (!overlay || !overlayText) return;
+
+        // 确保 overlay 可见
+        overlay.classList.remove('hidden');
+        overlay.style.display = '';
+
+        // 显示等待文案
+        overlayText.innerText = '排队中，请稍候……';
+        overlayText.classList.remove('highlight');
+
+        // 显示 spinner
+        const spinner = document.querySelector('.spinner');
+        if (spinner) spinner.classList.remove('hidden');
+
+        console.log('[Loading] Waiting for message...');
+    },
+
+    // 静态配置数据 (来自 config.json)
+    configData: null,
+
+    async loadConfig() {
+        try {
+            const response = await fetch('config.json');
+            this.configData = await response.json();
+            console.log('[H5] Config loaded:', this.configData.version);
+        } catch (error) {
+            console.error('[H5] Failed to load config.json:', error);
+            // 简单兜底，防止报错白屏，实际数据可以先放空
+            this.configData = { styles: {}, words: {}, prompts: {} };
+        }
+    },
+
     // 监听 PostMessage
     setupPostMessageListener() {
         window.addEventListener('message', (event) => {
             const msg = event.data;
             console.log('[H5] Received message:', msg);
 
-            if (msg.cmd === 'update_card') {
+            if (msg.cmd === 'py_btc_ai2_3_4') {
+                console.log('[H5] Protocol Validated: Received [py_btc_ai2_3_4] via Real PostMessage.');
                 this.updateConfig(msg.content);
             }
         });
@@ -70,6 +117,13 @@ const AppState = {
         this.config = { ...this.config, ...newConfig };
         console.log('[H5] Config updated:', this.config);
 
+        // 如果还在等待消息状态，收到消息后启动 loading 序列
+        if (this.isWaiting) {
+            this.isWaiting = false;
+            console.log('[H5] Message received, starting loading sequence...');
+            this.initLoadingSequence();
+        }
+
         // 通知各子系统更新
         // 1. 更新漂浮系统 (重新生成挂件)
         if (window.FloaterSystem) {
@@ -79,6 +133,25 @@ const AppState = {
         // 2. 更新贺卡内容 (不打开，只是更新数据)
         if (window.CardSystem) {
             window.CardSystem.updateData(this.config);
+        }
+
+        // 3. 更新全局背景 (Style Dependent)
+        this.updateBackground();
+    },
+
+    // 更新背景图
+    updateBackground() {
+        if (this.configData && this.configData.styles && this.configData.styles[this.config.card_style]) {
+            const styleConfig = this.configData.styles[this.config.card_style];
+            const bgUrl = styleConfig.background;
+
+            const bgLayer = document.getElementById('background-layer');
+            if (bgLayer && bgUrl) {
+                bgLayer.style.backgroundImage = `url('${bgUrl}')`;
+                bgLayer.style.backgroundSize = 'cover';
+                bgLayer.style.backgroundPosition = 'center';
+                console.log(`[H5] Background updated to: ${bgUrl}`);
+            }
         }
     },
 

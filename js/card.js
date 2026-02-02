@@ -42,7 +42,7 @@ const CardSystem = {
         this.imagesLoaded = false;
         let loadedCount = 0;
 
-        const style = styleName || 'pixel_world';
+        const style = styleName || 'frosted_blindbox';
         const text = textName || '';
 
         // 保存当前加载的组合标识，用于缓存检查
@@ -54,8 +54,8 @@ const CardSystem = {
             const img = new Image();
             // 序号补零，如 01, 02...
             const frameIndex = i.toString().padStart(2, '0');
-            // 构造路径: assets/frames/{style}/{text}/{style}{text}_{index}.jpg
-            const path = `assets/frames/${style}/${text}/${style}${text}_${frameIndex}.jpg`;
+            // 构造路径: assets/sequences/{style}/{text}/v1/{index}.jpg
+            const path = `assets/sequences/${style}/${text}/v1/${frameIndex}.jpg`;
 
             img.src = path;
             img.onload = () => {
@@ -87,14 +87,13 @@ const CardSystem = {
             this.close();
         });
 
-        // 提示词按钮
-        document.getElementById('info-btn').addEventListener('click', () => {
-            this.togglePrompt(true);
-        });
-
-        // 提示词区域点击自动关闭
-        document.getElementById('view-prompt').addEventListener('click', () => {
-            this.togglePrompt(false);
+        // Tab 切换逻辑 (使用新的 mini-tab 选择器)
+        const tabs = document.querySelectorAll('.mini-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                const targetTab = e.currentTarget.dataset.tab;
+                this.switchTab(targetTab);
+            });
         });
 
         // 进度条拖动
@@ -148,36 +147,73 @@ const CardSystem = {
         }
     },
 
-    // 切换提示词视图
-    togglePrompt(show) {
-        const greetingView = document.getElementById('view-greeting');
-        const promptView = document.getElementById('view-prompt');
-        if (show) {
-            greetingView.classList.add('view-hidden');
-            promptView.classList.remove('view-hidden');
-        } else {
-            greetingView.classList.remove('view-hidden');
-            promptView.classList.add('view-hidden');
-        }
+    // 切换 Tab
+    switchTab(tabId) {
+        // Update Nav (使用 mini-tab)
+        const tabs = document.querySelectorAll('.mini-tab');
+        tabs.forEach(t => {
+            if (t.dataset.tab === tabId) t.classList.add('active');
+            else t.classList.remove('active');
+        });
+
+        // Update Content
+        const panes = document.querySelectorAll('.tab-pane');
+        panes.forEach(p => {
+            // Chrome 59 compat: remove/add classes manually
+            p.classList.remove('active');
+            if (p.id === 'tab-' + tabId) {
+                p.classList.add('active');
+            }
+        });
+
+        // 如果切换到 Prompt 且尚未打印过，可以触发打印 (可选)
+        // 这里简化：每次切 Tab 不重置打印，只在 Open 时重置
     },
 
     // 风格友好名称映射
     styleNames: {
-        'pixel_world': '像素世界风格',
-        'felt_doll': '毛毡玩偶风格',
-        'frosted_cartoon': '磨砂卡通风格',
-        'dreamy_crystal': '梦幻水晶风格'
+        'frosted_blindbox': '磨砂盲盒风格',
+        'felt_craft': '手作毛毡风格',
+        'cyber_mecha': '赛博机甲风格',
+        'pixel_blocks': '像素积木风格'
     },
 
     // 更新文本数据
     updateData(config) {
         // 更新全局状态 (AppState) 已有的数据
-        document.getElementById('card-recipient').innerText = config.recipient || '妈妈';
+        const recipient = config.recipient || '妈妈';
+        const recipEl = document.getElementById('card-recipient');
+        if (recipEl) recipEl.innerText = recipient;
 
         // 更新提示词信息窗的数据
-        document.getElementById('prompt-info-recipient').innerText = config.recipient || '妈妈';
+        // 兼容 ES6 (no optional chaining)
+        const promptInfoRecip = document.getElementById('prompt-info-recipient');
+        if (promptInfoRecip) promptInfoRecip.innerText = recipient;
+
         const styleDisplayName = this.styleNames[config.card_style] || config.card_style;
-        document.getElementById('prompt-info-style').innerText = styleDisplayName;
+        const promptInfoStyle = document.getElementById('prompt-info-style');
+        if (promptInfoStyle) promptInfoStyle.innerText = styleDisplayName;
+
+        const promptInfoText = document.getElementById('prompt-info-text');
+        // config.greeting_words 可能是一个数组，取第一个
+        let wordKey = '';
+        if (Array.isArray(config.greeting_words)) {
+            wordKey = config.greeting_words[0];
+        } else {
+            wordKey = config.greeting_words;
+        }
+
+        // Try to get Chinese text for the key if possible, 
+        // otherwise just show the key. 
+        // Ideally we should lookup from configData
+        if (window.AppState.configData && window.AppState.configData.default) {
+            const words = window.AppState.configData.default.words;
+            if (words && words[wordKey]) {
+                if (promptInfoText) promptInfoText.innerText = words[wordKey].text;
+            } else {
+                if (promptInfoText) promptInfoText.innerText = wordKey;
+            }
+        }
     },
 
     open(floaterConfig) {
@@ -186,29 +222,52 @@ const CardSystem = {
         this.modal.classList.remove('hidden');
         this.modal.style.display = 'flex';
 
-        // 重置视图
-        this.togglePrompt(false);
+        // 重置 Tab 到 Meaning
+        this.switchTab('meaning');
 
-        // 绑定内容
-        document.getElementById('card-title').innerText = floaterConfig.text || '...';
-        document.getElementById('card-pinyin').innerText = floaterConfig.pinyin || '';
-        document.getElementById('card-message').innerText = floaterConfig.meaning || '';
+        // 绑定内容 & 打字机效果
+        const titleEl = document.getElementById('card-title');
+        const pinyinEl = document.getElementById('card-pinyin');
 
-        // 更新提示词详情
-        document.getElementById('prompt-info-text').innerText = floaterConfig.text || '...';
-        document.getElementById('prompt-ai-content').innerText = floaterConfig.ai_prompt || '';
+        if (titleEl) titleEl.innerText = floaterConfig.text || '...';
+        if (pinyinEl) pinyinEl.innerText = floaterConfig.pinyin || '';
 
-        // 更新提示词视图中的风格和收件人
         this.updateData(window.AppState.config);
 
-        const currentStyle = window.AppState.config.card_style;
-        const currentText = floaterConfig.text || '';
-        const combinationId = `${currentStyle}_${currentText}`;
+        // 准备打字机文本
+        const meaningText = floaterConfig.meaning || "愿你快乐每一天！";
+        const promptText = floaterConfig.ai_prompt || "AI Prompt Loading...";
 
-        // 检查是否需要重新加载资源
-        if (!this.currentStyleText || this.currentStyleText !== combinationId) {
-            this.preloadFrames(currentStyle, currentText);
+        // 启动打字机 (Meaning) -> 完成后显示按钮
+        this.startTypewriter('typewriter-meaning', meaningText, 30, () => {
+            // Typing done callback
+            const btn = document.getElementById('accept-btn');
+            if (btn) {
+                btn.classList.remove('hidden-initially');
+                btn.classList.add('fade-in-up');
+            }
+        });
+
+        // 同时也重置 Prompt 的打字机，但不立即播放? 还是可以一起播放? 
+        // 既然 Tab 隐藏了 content，并在CSS用了display:none，
+        // 最好是一起准备好，或者切过去再播。
+        // 简单起见：一起播。
+        this.startTypewriter('typewriter-prompt', promptText, 20); // Faster prompt
+
+        // 隐藏按钮初始状态
+        const btn = document.getElementById('accept-btn');
+        if (btn) {
+            btn.classList.remove('fade-in-up');
+            btn.classList.add('hidden-initially');
         }
+
+        // 预加载并播放序列帧
+        // 从 AppState 获取当前风格，从 floaterConfig 获取当前 word key
+        const currentStyle = window.AppState.config.card_style;
+        const currentKey = floaterConfig.key || 'burger'; // fallback
+        this.currentStyle = currentStyle;
+        this.currentKey = currentKey;
+        this.preloadFrames(currentStyle, currentKey);
 
         // 逻辑修改：起始帧设为第6张
         this.currentFrame = 6;
@@ -219,6 +278,38 @@ const CardSystem = {
         if (this.imagesLoaded && window.AppState.config.auto_play) {
             this.play();
         }
+    },
+
+    // 打字机效果
+    startTypewriter(elementId, text, speed = 50, callback) {
+        const container = document.getElementById(elementId);
+        if (!container) return;
+
+        container.innerHTML = ''; // Clear
+
+        let index = 0;
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor';
+        container.appendChild(cursor);
+
+        // Clear existing interval if any (store in dataset/property to avoid collision)
+        if (container._typeInterval) clearInterval(container._typeInterval);
+
+        function type() {
+            if (index < text.length) {
+                const char = text.charAt(index);
+                const charNode = document.createTextNode(char);
+                container.insertBefore(charNode, cursor);
+                index++;
+            } else {
+                clearInterval(container._typeInterval);
+                // Keep cursor blinking or remove? Usually keep for typewriter feel
+                // Trigger callback
+                if (callback) callback();
+            }
+        }
+
+        container._typeInterval = setInterval(type, speed);
     },
 
     // 回调钩子

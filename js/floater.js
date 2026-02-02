@@ -16,60 +16,19 @@ const FloaterSystem = {
     lastSlotIndex: -1,
 
     // 配置映射表
-    types: {
-        'burger': {
-            text: '一堡口福',
-            pinyin: 'yī bǎo kǒu fú',
-            meaning: '愿你诸事顺遂，像汉堡一样层层叠叠全是惊喜！日常诸事顺意，烦忧悄然消散，笑意常挂眉梢，开心每一天~',
-            ai_prompt: '画面中心是诱人的多层汉堡，周围堆满薯条、彩虹糖、可乐等零食，背景采用暖橙色调；线条柔和明快，色彩鲜亮治愈，整体充满童趣与欢乐氛围。',
-            image: 'assets/item_burger.png'
-        },
-        'chips': {
-            text: '薯你最棒',
-            pinyin: 'shǔ nǐ zuì bàng',
-            meaning: '愿你能量满满，像热气腾腾的薯条一样时刻保持最佳状态！无论面对什么挑战，你都是最耀眼的那颗星。',
-            ai_prompt: '画面中心是一份金黄酥脆的薯条，包装带有笑脸，周围飘浮着番茄酱点缀；背景色调明快，充满活力感。',
-            image: 'assets/item_chips.png'
-        },
-        'horse': {
-            text: '马到成功',
-            pinyin: 'mǎ dào chéng gōng',
-            meaning: '愿你勇往直前，事业学业如骏马奔腾般势不可挡！所有目标都能即刻达成，成功触手可及。',
-            ai_prompt: '画面中心是一匹神采奕奕的金色骏马，马蹄下踏着彩云；背景采用梦幻的星空蓝，伴随闪烁的火花感。',
-            image: 'assets/item_horse.png'
-        },
-        'snowflake': {
-            text: '冰雪聪明',
-            pinyin: 'bīng xuě cōng míng',
-            meaning: '愿你灵感迸发，像剔透的雪花一样纯净又富有才华！心思细腻敏锐，总能洞察世界的美好与真谛。',
-            ai_prompt: '画面中心是精致的六角雪花晶体，折射出晶莹剔透的光芒，周围是毛茸茸的雪球；背景色调偏冷但充满灵动感。',
-            image: 'assets/item_snowflake.png'
-        },
-        'banana': {
-            text: '萌趣纳福',
-            pinyin: 'méng qù nà fú',
-            meaning: '愿你诸事顺遂，像小黄人一样活力满满，萌趣十足！日常诸事顺意，烦忧悄然消散，笑意常挂眉梢，开心每一天~',
-            ai_prompt: '画面中心是憨萌小黄人，抱着彩色糖果蹦跳玩耍，周围堆满彩虹糖、棉花糖云朵、糖果屋，背景暖橙色调；加精致细线边框，角落留空白可写祝福语；线条柔和明快，色彩鲜亮治愈，整体充满童趣与欢乐氛围。',
-            image: 'assets/item_banana.png'
-        },
-        'kitty': {
-            text: '大吉大利',
-            pinyin: 'dà jí dà lì',
-            meaning: '愿你福气盈门，像招财猫一样时刻吸引着幸运与喜悦！生活顺风顺水，处处都有温暖的惊喜在等你。',
-            ai_prompt: '画面中心是一只可爱的招财猫，系着红色铃铛，周围是金元宝与花瓣；背景喜庆且富有现代感。',
-            image: 'assets/item_kitty.png'
-        }
-    },
-
+    // 移除硬编码 types，改为动态读取
     init() {
         this.container = document.getElementById('floater-layer');
         if (!this.container) return;
 
-        // 预加载图片
-        Object.values(this.types).forEach(t => {
-            const img = new Image();
-            img.src = t.image;
-        });
+        // 预加载图片 (改为从 Config 读)
+        if (window.AppState.configData && window.AppState.configData.default && window.AppState.configData.default.words) {
+            const words = window.AppState.configData.default.words;
+            Object.values(words).forEach(t => {
+                const img = new Image();
+                img.src = t.image;
+            });
+        }
 
         // 预加载星星迸发特效
         for (let i = 1; i <= 12; i++) {
@@ -78,7 +37,40 @@ const FloaterSystem = {
             img.src = `assets/关卡道具-星星迸发/道具-星星迸发-xx_${num}.png`;
         }
 
+        // 预加载光环展开特效
+        for (let i = 1; i <= 12; i++) {
+            const img = new Image();
+            const num = i.toString().padStart(2, '0');
+            img.src = `assets/关卡道具-光环展开/道具-光环展开-gh_${num}.png`;
+        }
+
         this.refresh(window.AppState.config.greeting_words);
+    },
+
+    // 获取单词配置 (Helper)
+    getWordConfig(key) {
+        if (!window.AppState.configData) return null;
+
+        // 1. 尝试从默认配置读取基础信息 (image, text, pinyin, meaning)
+        const baseConfig = window.AppState.configData.default.words[key];
+        if (!baseConfig) return null;
+
+        // 2. 尝试根据当前 Style 读取特定的 Prompt
+        const currentStyle = window.AppState.config.card_style;
+        let prompt = baseConfig.ai_prompt || ""; // 默认 prompt
+
+        if (window.AppState.configData.prompts &&
+            window.AppState.configData.prompts[currentStyle] &&
+            window.AppState.configData.prompts[currentStyle][key]) {
+            prompt = window.AppState.configData.prompts[currentStyle][key];
+        }
+
+        // 3. 合并返回
+        return {
+            ...baseConfig,
+            key: key, // 添加 key 字段，便于 CardSystem 识别当前 word
+            ai_prompt: prompt
+        };
     },
 
     refresh(types) {
@@ -137,7 +129,9 @@ const FloaterSystem = {
     createFloater(typeKey, isInitial = false, initialIndex = 0) {
         if (!this.container) return;
 
-        const config = this.types[typeKey] || this.types['burger'];
+        const config = this.getWordConfig(typeKey) || this.getWordConfig('burger');
+        // 如果连 fallback 都没有 (config没加载)，则临时模拟一个
+        if (!config) return;
         const el = document.createElement('div');
         el.className = 'floater';
 
@@ -214,15 +208,48 @@ const FloaterSystem = {
         // --- DOM ---
         const body = document.createElement('div');
         body.className = 'floater-body';
-        body.style.backgroundImage = `url('${config.image}')`;
+
+        // 逻辑变更: 24种独立天灯
+        // 路径: assets/sequences/{style}/{word}/lantern.png
+        const currentStyle = window.AppState.config.card_style;
+        const wordKey = typeKey;
+        const lanternPath = `assets/sequences/${currentStyle}/${wordKey}/lantern.png`;
+
+        // 默认使用生成的路径。如果文件不存在 (onerror)，在 CSS background 中较难捕获。
+        // 但我们已经生成了所有占位符。
+        body.style.backgroundImage = `url('${lanternPath}')`;
         body.title = config.text;
 
-        const string = document.createElement('div');
+        // 挂绳：使用图片素材替代 CSS 绘制
+        const string = document.createElement('img');
         string.className = 'floater-string';
+        // 赛博风格使用金属灯绳，其他风格使用红色灯绳
+        const ropePath = currentStyle === 'cyber_mecha'
+            ? 'assets/rope_metal.png'
+            : 'assets/rope_red.png';
+        string.src = ropePath;
+        string.alt = '';
 
-        const tag = document.createElement('div');
+        // 吊牌：使用图片素材替代 CSS 绘制
+        const tag = document.createElement('img');
         tag.className = 'floater-tag';
-        tag.innerText = config.text;
+        // 路径模式：assets/tags/{style}/{word}.png
+        // 只有 frosted_blindbox 和 cyber_mecha 有吊牌素材
+        const tagStyle = (currentStyle === 'cyber_mecha') ? 'cyber_mecha' : 'frosted_blindbox';
+        const tagPath = `assets/tags/${tagStyle}/${wordKey}.png`;
+        tag.src = tagPath;
+        tag.alt = config.text;
+        tag.title = config.text;
+
+        // 图片加载失败时回退到 CSS 绘制方案
+        tag.onerror = function () {
+            const fallbackTag = document.createElement('div');
+            fallbackTag.className = 'floater-tag floater-tag-fallback';
+            fallbackTag.innerText = config.text;
+            if (tag.parentNode) {
+                tag.parentNode.replaceChild(fallbackTag, tag);
+            }
+        };
 
         el.appendChild(body);
         el.appendChild(string);
@@ -230,8 +257,9 @@ const FloaterSystem = {
 
         el.addEventListener('click', (e) => {
             if (!this.isActive) return; // 弹窗打开时禁止重复点击
-            // const currentZ = parseInt(el.style.zIndex) || 10;
-            // this.createClickEffect(e.clientX, e.clientY, currentZ); // 移除立即播放
+            // 点击时立即播放星星迸发特效
+            const currentZ = parseInt(el.style.zIndex) || 10;
+            this.createClickEffect(e.clientX, e.clientY, currentZ);
             this.handleFloaterClick(el, config);
             e.stopPropagation();
         });
@@ -339,9 +367,9 @@ const FloaterSystem = {
         el.style.transform = `translate(${moveX}px, ${moveY}px) scale(2)`;
 
         setTimeout(() => {
-            // 移动到位后，播放星星迸发特效
+            // 移动到位后，播放光环展开特效
             // 此时物体在舞台中心，zIndex 为 100
-            this.createClickEffect(stageCenterX, stageCenterY, 100);
+            this.createHaloEffect(stageCenterX, stageCenterY, 100);
 
             // 延迟一点时间再打开贺卡，让特效展示一下
             setTimeout(() => {
@@ -392,27 +420,87 @@ const FloaterSystem = {
         // 层级设为比点击物体低 1 级，确保在物体下方播放
         effect.style.zIndex = (targetZIndex || 10) - 1;
 
+        // 预设第一帧背景，避免闪烁
+        effect.style.backgroundImage = `url('assets/关卡道具-星星迸发/道具-星星迸发-xx_01.png')`;
+
         this.container.appendChild(effect);
 
         // 序列帧动画
-        let frame = 1;
+        let frame = 2; // 从第2帧开始，因为第1帧已预设
         const maxFrames = 12;
-        const fps = 20; // 适当降速让效果看清楚
+        const fps = 24; // 提高帧率减少闪烁
         const interval = 1000 / fps;
+        let lastTime = 0;
 
-        const updateFrame = () => {
+        const updateFrame = (timestamp) => {
             if (frame > maxFrames) {
                 if (effect.parentNode) effect.parentNode.removeChild(effect);
                 return;
             }
-            const num = frame.toString().padStart(2, '0');
-            const path = `assets/关卡道具-星星迸发/道具-星星迸发-xx_${num}.png`;
-            effect.style.backgroundImage = `url('${path}')`;
-            frame++;
-            setTimeout(updateFrame, interval);
+
+            if (timestamp - lastTime >= interval) {
+                const num = frame.toString().padStart(2, '0');
+                const path = `assets/关卡道具-星星迸发/道具-星星迸发-xx_${num}.png`;
+                effect.style.backgroundImage = `url('${path}')`;
+                frame++;
+                lastTime = timestamp;
+            }
+            requestAnimationFrame(updateFrame);
         };
 
-        updateFrame();
+        requestAnimationFrame(updateFrame);
+    },
+
+    // 光环展开特效 - 点击时立即播放
+    createHaloEffect(x, y, targetZIndex) {
+        if (!this.container) return;
+
+        const effect = document.createElement('div');
+        effect.className = 'halo-expand';
+
+        // 计算相对坐标 (处理缩放)
+        const rect = this.container.getBoundingClientRect();
+        const scaleX = rect.width / this.container.offsetWidth;
+        const scale = scaleX || 1;
+
+        const localX = (x - rect.left) / scale;
+        const localY = (y - rect.top) / scale;
+
+        effect.style.left = localX + 'px';
+        effect.style.top = localY + 'px';
+
+        // 层级设为与点击物体相同
+        effect.style.zIndex = targetZIndex || 10;
+
+        // 预设第一帧背景，避免闪烁
+        effect.style.backgroundImage = `url('assets/关卡道具-光环展开/道具-光环展开-gh_01.png')`;
+
+        this.container.appendChild(effect);
+
+        // 序列帧动画
+        let frame = 2; // 从第2帧开始，因为第1帧已预设
+        const maxFrames = 12;
+        const fps = 24; // 光环展开用更快的帧率
+        const interval = 1000 / fps;
+        let lastTime = 0;
+
+        const updateFrame = (timestamp) => {
+            if (frame > maxFrames) {
+                if (effect.parentNode) effect.parentNode.removeChild(effect);
+                return;
+            }
+
+            if (timestamp - lastTime >= interval) {
+                const num = frame.toString().padStart(2, '0');
+                const path = `assets/关卡道具-光环展开/道具-光环展开-gh_${num}.png`;
+                effect.style.backgroundImage = `url('${path}')`;
+                frame++;
+                lastTime = timestamp;
+            }
+            requestAnimationFrame(updateFrame);
+        };
+
+        requestAnimationFrame(updateFrame);
     }
 };
 

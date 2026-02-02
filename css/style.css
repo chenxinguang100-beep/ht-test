@@ -73,59 +73,63 @@ body {
 }
 
 /* --- Mac 标题栏装饰 --- */
-.mac-title-bar {
-    /* position: absolute;  <-- 改为相对定位，不重叠 */
+/* --- macOS Window Header (Ported & Adapted) --- */
+.window-header {
     position: relative;
     width: 100%;
-    height: 0.48rem;
-    /* 48px -> 0.48rem */
-    background: linear-gradient(to bottom, #3a3f4b, #282c34);
-    /* 稍微有点渐变 */
-    /* backdrop-filter: blur(10px);  <-- 不在背景上，不需要磨砂 */
-    z-index: 10;
+    /* 30px -> 0.3rem */
+    height: 0.3rem;
+    background: #2b2b36;
+    border-bottom: 0.01rem solid #1a1a24;
     display: flex;
     align-items: center;
-    justify-content: center;
-    border-bottom: 0.01rem solid #1a1d23;
+    padding: 0 0.12rem;
+    /* 12px -> 0.12rem */
+    z-index: 10;
+    justify-content: flex-start;
+    /* Reset from previous center */
 }
 
-.mac-buttons {
-    position: absolute;
-    left: 0.16rem;
+.traffic-lights {
     display: flex;
     gap: 0.08rem;
+    /* 8px -> 0.08rem */
 }
 
-.mac-btn {
+.light {
     width: 0.12rem;
-    /* 增大一点 */
+    /* 12px -> 0.12rem */
     height: 0.12rem;
     border-radius: 50%;
+    display: block;
 }
 
-.mac-btn.red {
-    background: #FF5F56;
-    box-shadow: 0 0 4px #FF5F56;
+.light.red {
+    background-color: #ff5f56;
+    border: 0.005rem solid #e0443e;
 }
 
-.mac-btn.yellow {
-    background: #FFBD2E;
-    box-shadow: 0 0 4px #FFBD2E;
+.light.yellow {
+    background-color: #ffbd2e;
+    border: 0.005rem solid #dea123;
 }
 
-.mac-btn.green {
-    background: #27C93F;
-    box-shadow: 0 0 4px #27C93F;
+.light.green {
+    background-color: #27c93f;
+    border: 0.005rem solid #1aab29;
 }
 
-.mac-title {
-    color: #e0e0e0;
-    font-size: 0.16rem;
+.window-title {
+    flex: 1;
+    text-align: center;
+    font-size: 0.13rem;
+    /* 13px -> 0.13rem */
+    color: #888;
+    /* Offset to center visually */
+    margin-right: 0.52rem;
+    /* 52px -> 0.52rem */
     font-weight: 500;
-    letter-spacing: 0.005rem;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    text-shadow: 0 0.01rem 0.02rem rgba(0, 0, 0, 0.5);
-    opacity: 0.9;
 }
 
 /* 锁定根字号基准：在 1200px 宽度下，1rem = 100px */
@@ -229,15 +233,31 @@ html {
 }
 
 .floater-string {
-    width: 2px;
-    /* 线条粗细可以用 px，因为太细了 */
-    height: 0.3rem;
-    background-color: #d32f2f;
+    width: 0.06rem;
+    /* 灯绳宽度 6px */
+    height: 0.35rem;
+    /* 灯绳高度 35px */
     margin-top: -2px;
     z-index: 1;
+    object-fit: contain;
+    /* 图片保持比例 */
 }
 
 .floater-tag {
+    width: 0.5rem;
+    /* 吊牌宽度 50px */
+    height: auto;
+    /* 高度自适应 */
+    max-height: 1.2rem;
+    margin-top: -2px;
+    /* 钟摆动画基点 */
+    transform-origin: top center;
+    animation: swing 3s ease-in-out infinite alternate;
+    object-fit: contain;
+}
+
+/* 回退方案：当图片不存在时使用 CSS 绘制 */
+.floater-tag-fallback {
     width: 0.4rem;
     height: 1rem;
     /* 渐变背景：从亮红到深红 */
@@ -254,10 +274,6 @@ html {
     /* 增加内阴影模拟质感，外阴影增加浮动感 */
     box-shadow: inset 0 0.02rem 0.05rem rgba(255, 255, 255, 0.2), 0 0.02rem 0.05rem rgba(0, 0, 0, 0.3);
     border: 1px solid #b71c1c;
-    margin-top: -2px;
-    /* 钟摆动画基点 */
-    transform-origin: top center;
-    animation: swing 3s ease-in-out infinite alternate;
 }
 
 @keyframes swing {
@@ -298,6 +314,31 @@ html {
         opacity: 0;
         border-width: 1px;
     }
+}
+
+/* 序列帧特效基础样式 */
+.star-burst,
+.halo-expand {
+    position: absolute;
+    pointer-events: none;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+    transform: translate(-50%, -50%);
+}
+
+/* 星星迸发特效 - 天灯移动到中心时播放 */
+.star-burst {
+    width: 3rem;
+    height: 3rem;
+    z-index: 99;
+}
+
+/* 光环展开特效 - 点击天灯时立即播放 */
+.halo-expand {
+    width: 2.5rem;
+    height: 2.5rem;
+    z-index: 25;
 }
 
 /* 调试面板 (Mock System) - 保持 px，因为它独立于舞台缩放 */

@@ -15,13 +15,14 @@
         <!-- 主窗口容器 (New) -->
         <div id="main-window">
             <!-- Mac 窗口标题栏装饰 (置顶) -->
-            <div class="mac-title-bar">
-                <div class="mac-buttons">
-                    <span class="mac-btn red"></span>
-                    <span class="mac-btn yellow"></span>
-                    <span class="mac-btn green"></span>
+            <!-- Mac Window Header (Ported from Project B) -->
+            <div class="window-header">
+                <div class="traffic-lights">
+                    <span class="light red"></span>
+                    <span class="light yellow"></span>
+                    <span class="light green"></span>
                 </div>
-                <div class="mac-title">动态贺卡</div>
+                <div class="window-title">H5 动态贺卡</div>
             </div>
 
             <!-- 核心舞台包裹层 -->
@@ -58,8 +59,7 @@
                             <div class="card-left">
                                 <div class="frame-player-container">
                                     <canvas id="frame-canvas" width="360" height="480"></canvas>
-                                    <!-- 提示词切换按钮 (!) -->
-                                    <button id="info-btn" class="info-button" title="查看提示词">!</button>
+                                    <!-- 提示词切换按钮已移除 -->
                                     <!-- 进度条悬浮在贺图底部 -->
                                     <div class="slider-control floating-slider">
                                         <input type="range" id="frame-slider" min="1" max="16" value="1" step="1">
@@ -69,49 +69,75 @@
 
                             <!-- 右侧：明信片文本区 -->
                             <div class="card-right">
-                                <!-- 祝福语视图 -->
-                                <div id="view-greeting" class="view-content">
-                                    <div class="postcard-content">
-                                        <div class="field-to">祝 <span id="card-recipient">妈妈</span>：</div>
+                                <!-- 明信片纹理背景在 CSS 中处理 -->
 
-                                        <!-- 核心展示：拼音 + 大字标题 -->
-                                        <div class="blessing-title-box">
-                                            <div id="card-pinyin" class="field-pinyin">mèng qù nà fú</div>
-                                            <div id="card-title" class="field-title">萌趣纳福</div>
-                                        </div>
-
-                                        <div class="field-body" id="card-message">
-                                            亲爱的妈妈，愿你诸事顺遂，活力满满，开心每一天~
-                                        </div>
+                                <!-- 邮戳区域（右上角） -->
+                                <div class="postcard-stamp-area">
+                                    <div class="postal-code">
+                                        <div class="postal-cell"></div>
+                                        <div class="postal-cell"></div>
+                                        <div class="postal-cell"></div>
+                                        <div class="postal-cell"></div>
+                                        <div class="postal-cell"></div>
+                                        <div class="postal-cell"></div>
                                     </div>
-                                    <div class="postcard-action">
-                                        <button id="accept-btn" class="btn-primary">接受祝福</button>
-                                        <div class="mascot-illustration"></div>
+                                    <div class="stamp-box" id="stamp-box">
+                                        <!-- 邮票图标，后续动态渲染 -->
+                                        <div class="stamp-placeholder">邮票</div>
                                     </div>
                                 </div>
 
-                                <!-- 提示词视图 (初始隐藏) -->
-                                <div id="view-prompt" class="view-content view-hidden">
-                                    <div class="prompt-header-grid">
-                                        <div class="info-item">
-                                            <label>输入祝福语</label>
-                                            <span id="prompt-info-text">萌趣纳福</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <label>风格模型</label>
-                                            <span id="prompt-info-style">毛毡卡通风格</span>
-                                        </div>
-                                        <div class="info-item">
-                                            <label>输入收信人</label>
-                                            <span id="prompt-info-recipient">妈妈</span>
+                                <!-- 收件人区域（始终可见） -->
+                                <div class="postcard-header">
+                                    <div class="field-to">To: <span id="card-recipient">妈妈</span></div>
+                                </div>
+
+                                <!-- 标题/拼音 + 内嵌迷你 Tab -->
+                                <div class="blessing-title-box">
+                                    <div id="card-pinyin" class="field-pinyin">mèng qù nà fú</div>
+                                    <div id="card-title" class="field-title">萌趣纳福</div>
+                                    <!-- 迷你 Tab 切换（弱化样式） -->
+                                    <div class="mini-tabs">
+                                        <span class="mini-tab active" data-tab="meaning">寓意</span>
+                                        <span class="mini-tab-divider">|</span>
+                                        <span class="mini-tab" data-tab="prompt">Prompt</span>
+                                    </div>
+                                </div>
+
+                                <!-- 内容区域 -->
+                                <div class="card-tab-content">
+                                    <!-- Tab 1: AI 寓意 -->
+                                    <div id="tab-meaning" class="tab-pane active">
+                                        <div class="postcard-body">
+                                            <div class="typewriter-container" id="typewriter-meaning">
+                                                <!-- 打字机文本将注入这里 -->
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="ai-prompt-container">
-                                        <div class="ai-label">AI优化后提示词：</div>
-                                        <div id="prompt-ai-content" class="ai-content-box">
-                                            画面中心是憨萌小黄人，抱着彩色糖果蹦跳玩耍...
+
+                                    <!-- Tab 2: AI Prompt -->
+                                    <div id="tab-prompt" class="tab-pane">
+                                        <div class="prompt-info-grid">
+                                            <div class="info-row">
+                                                <span class="label">风格：</span>
+                                                <span class="value" id="prompt-info-style">风格名称</span>
+                                            </div>
+                                            <div class="info-row">
+                                                <span class="label">关键词：</span>
+                                                <span class="value" id="prompt-info-text">萌趣纳福</span>
+                                            </div>
+                                        </div>
+                                        <div class="postcard-body">
+                                            <div class="typewriter-container" id="typewriter-prompt">
+                                                <!-- Prompt 打字机文本 -->
+                                            </div>
                                         </div>
                                     </div>
+                                </div>
+
+                                <!-- 底部操作区 (绝对定位或底部对齐) -->
+                                <div class="postcard-footer">
+                                    <button id="accept-btn" class="btn-primary hidden-initially">接受祝福</button>
                                 </div>
                             </div>
                         </div>

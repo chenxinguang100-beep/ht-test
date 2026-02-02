@@ -4,11 +4,11 @@
  */
 const MockSystem = {
     panel: null,
-    
+
     init() {
         this.panel = document.getElementById('debug-panel');
         if (!this.panel) return;
-        
+
         this.renderUI();
         this.bindEvents();
     },
@@ -16,29 +16,29 @@ const MockSystem = {
     renderUI() {
         this.panel.innerHTML = `
             <div class="debug-header" id="debug-toggle">
-                <span>🔧 调试配置 (Mock)</span>
+                <span>🔧 调试面板 (真实协议模拟)</span>
                 <span>⬆️</span>
             </div>
             <div class="debug-content">
                 <div class="form-group">
                     <label>挂件/贺词类型 (多选)</label>
                     <div id="mock-greeting-group">
+                        <label><input type="checkbox" value="snowflake" checked> 瑞雪呈祥</label>
                         <label><input type="checkbox" value="burger" checked> 一堡口福</label>
-                        <label><input type="checkbox" value="chips"> 薯你最棒</label>
-                        <label><input type="checkbox" value="horse" checked> 马到成功</label>
-                        <label><input type="checkbox" value="snowflake"> 冰雪聪明</label>
-                        <label><input type="checkbox" value="banana" checked> 萌趣纳福</label>
-                        <label><input type="checkbox" value="kitty"> 大吉大利</label>
+                        <label><input type="checkbox" value="wealth" checked> 财富自由</label>
+                        <label><input type="checkbox" value="fortune"> 好运连连</label>
+                        <label><input type="checkbox" value="lucky"> 时来运转</label>
+                        <label><input type="checkbox" value="high_fly"> 一飞冲天</label>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>贺卡风格 (card_style)</label>
                     <select id="mock-style">
-                        <option value="pixel_world">像素世界</option>
-                        <option value="felt_doll">毛毡玩偶</option>
-                        <option value="frosted_cartoon">磨砂卡通</option>
-                        <option value="dreamy_crystal">梦幻水晶</option>
+                        <option value="frosted_blindbox">磨砂盲盒</option>
+                        <option value="felt_craft">手作毛毡</option>
+                        <option value="cyber_mecha">赛博机甲</option>
+                        <option value="pixel_blocks">像素积木</option>
                     </select>
                 </div>
 
@@ -101,7 +101,7 @@ const MockSystem = {
 
             // 构造消息包
             const msg = {
-                cmd: 'update_card',
+                cmd: 'py_btc_ai2_3_4',
                 content: {
                     greeting_words: selectedGreetings, // 发送数组
                     card_style: style,
@@ -115,7 +115,7 @@ const MockSystem = {
 
             // 模拟发送
             window.postMessage(msg, '*');
-            
+
             // 简单的反馈
             console.log('[Mock] Sent:', msg);
         });

@@ -1,0 +1,95 @@
+{
+    "version": "2.0",
+    "styles": {
+        "frosted_blindbox": {
+            "name": "磨砂盲盒",
+            "background": "assets/sequences/frosted_blindbox/bg_stage.jpg"
+        },
+        "felt_craft": {
+            "name": "手作毛毡",
+            "background": "assets/bg_stage.jpeg"
+        },
+        "cyber_mecha": {
+            "name": "赛博机甲",
+            "background": "assets/sequences/cyber_mecha/bg_stage.jpg"
+        },
+        "pixel_blocks": {
+            "name": "像素积木",
+            "background": "assets/bg_stage.jpeg"
+        }
+    },
+    "default": {
+        "words": {
+            "snowflake": {
+                "text": "瑞雪呈祥",
+                "pinyin": "ruì xuě chéng xiáng",
+                "meaning": "愿瑞雪纷飞为你带来吉祥如意，新的一年万事顺遂，幸福美满。",
+                "image": "assets/item_snowflake.png"
+            },
+            "burger": {
+                "text": "一堡口福",
+                "pinyin": "yī bǎo kǒu fú",
+                "meaning": "愿你生活富足，像层层叠叠的汉堡一样，每一口都是满满的幸福与惊喜。",
+                "image": "assets/item_burger.png"
+            },
+            "wealth": {
+                "text": "财富自由",
+                "pinyin": "cái fù zì yóu",
+                "meaning": "愿你财源广进，实现心中所想，不必为物质所困，尽情享受生活的每一份美好。",
+                "image": "assets/item_wealth.png"
+            },
+            "fortune": {
+                "text": "好运连连",
+                "pinyin": "hǎo yùn lián lián",
+                "meaning": "愿你福星高照，好运如同接力棒一般传递，生活处处充满温暖与顺遂。",
+                "image": "assets/item_fortune.png"
+            },
+            "lucky": {
+                "text": "时来运转",
+                "pinyin": "shí lái yùn zhuǎn",
+                "meaning": "愿你抓住机遇，在每一个转折点都能迎风而上，开启人生新的辉煌篇章。",
+                "image": "assets/item_lucky.png"
+            },
+            "high_fly": {
+                "text": "一飞冲天",
+                "pinyin": "yī fēi chōng tiān",
+                "meaning": "愿你志向高远，如火箭般势不可挡，直冲云霄，实现人生最宏伟的理想。",
+                "image": "assets/item_high_fly.png"
+            }
+        }
+    },
+    "prompts": {
+        "frosted_blindbox": {
+            "snowflake": "磨砂质感的盲盒公仔，瑞雪造型，表面有细腻的颗粒感，柔和的灯光，寓意瑞雪呈祥...",
+            "burger": "可爱的汉堡盲盒公仔，磨砂质感，色彩柔和...",
+            "wealth": "象征财富的金币盲盒公仔，磨砂质感，低调奢华...",
+            "fortune": "红色的福袋盲盒公仔，磨砂表面，喜庆可爱...",
+            "lucky": "幸运转盘造型的盲盒，磨砂质感，精致细节...",
+            "high_fly": "小火箭盲盒公仔，磨砂质感，蓄势待发..."
+        },
+        "felt_craft": {
+            "snowflake": "羊毛毡制作的瑞雪，边缘毛茸茸的，温暖柔软，寓意吉祥如意...",
+            "burger": "手工羊毛毡汉堡，质感真实，充满生活气息...",
+            "wealth": "羊毛毡金元宝，软萌可爱，寓意招财进宝...",
+            "fortune": "羊毛毡红锦鲤，色彩鲜艳，寓意好运...",
+            "lucky": "羊毛毡风车，随风转动，带来好运...",
+            "high_fly": "羊毛毡小飞机，承载梦想，飞向蓝天..."
+        },
+        "cyber_mecha": {
+            "snowflake": "赛博朋克风格的机械瑞雪，金属光泽，霓虹光效，象征祥瑞...",
+            "burger": "机械结构的能量汉堡，科技感十足，发光线条...",
+            "wealth": "赛博风格的能量方块，散发着金色光芒...",
+            "fortune": "机械招财猫，赛博义肢，霓虹闪烁...",
+            "lucky": "全息投影的幸运符，科技感与传统的结合...",
+            "high_fly": "未来的推进器飞行器，喷射出蓝色尾焰..."
+        },
+        "pixel_blocks": {
+            "snowflake": "像素积木拼搭的瑞雪，颗粒分明，晶莹剔透，寓意呈祥...",
+            "burger": "色彩鲜艳的积木汉堡，充满童趣，立体感强...",
+            "wealth": "积木拼成的宝箱，满载金币，像素风格...",
+            "fortune": "积木锦鲤，灵动活泼，像素颗粒感...",
+            "lucky": "积木转盘，红白相间，像素风格...",
+            "high_fly": "积木火箭，像素颗粒构建，准备发射..."
+        }
+    }
+}
