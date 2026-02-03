@@ -18,8 +18,9 @@ H5动态贺卡/
 ├── assets/             # 静态资源
 │   ├── bg_stage.png    # 舞台大背景图
 │   ├── item_*.png      # 漂浮挂件素材
-│   └── frames/         # 贺图序列帧资源目录
-│       └── pixel_night/ # 风格目录 (1.jpg - 16.jpg)
+│   ├── sequences/      # 贺图序列帧资源目录
+│   │   └── pixel_night/ # 风格目录
+│   │       └── 冰雪聪明/ # 贺词目录 (v1/01.jpg - 24.jpg)
 ├── css/
 │   ├── style.css       # 全局样式、舞台定位、漂浮挂件样式
 │   └── modal.css       # 贺卡弹窗专用样式（REM 布局）
@@ -60,8 +61,9 @@ H5动态贺卡/
 
 ### 3.3 贺卡序列帧系统 (Card System)
 - **动态路径映射**: 根据“风格”和“贺词”双重维度动态构建资源路径。
-    - 规则：`assets/frames/{style}/{text}/{style}{text}_{index}.jpg`
-    - 示例：`assets/frames/pixel_world/冰雪聪明/pixel_world冰雪聪明_01.jpg`
+    - **动态路径映射**: 根据“风格”和“贺词”双重维度动态构建资源路径。
+    - 规则：`assets/sequences/{style}/{text}/v1/{index}.jpg`
+    - 示例：`assets/sequences/pixel_world/冰雪聪明/v1/01.jpg`
 - **加载守卫**: 在播放前检查 `imagesLoaded` 状态，确保资源就绪后再开始动画。
 - **循环播放算法**: 
     - 初始点亮天灯后，从第 6 帧开始播放，提供更好的初始视觉切入点。
@@ -110,7 +112,7 @@ window.postMessage({ cmd: 'close_app' }, '*');
 ### 5.1 如何更换素材
 1. **背景图**: 替换 `assets/bg_stage.png`。
 2. **挂件**: 替换 `assets/item_*.png`，并在 `floater.js` 的 `types` 对象中更新配置。
-3. **序列帧**: 在 `assets/frames/` 下创建新风格文件夹（如 `cyberpunk/`），放入 `1.jpg` 至 `16.jpg`。
+3. **序列帧**: 在 `assets/sequences/` 下创建新风格文件夹（如 `cyberpunk/`），并在其下创建贺词文件夹及 `v1` 子文件夹，放入 `01.jpg` 至 `24.jpg`。
 
 ### 5.2 兼容性注意事项
 - **CSS**: 严禁使用 `gap` (Flex/Grid), `backdrop-filter` (需带前缀并提供回退色), `inset` 等高版本属性。

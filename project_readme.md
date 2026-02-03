@@ -23,12 +23,12 @@
 - **背景图**: `assets/bg_stage.png` (建议 1000x750 像素)
 - **挂件图**: `assets/item_burger.png`, `assets/item_horse.png` 等。
 
-### 4.2 贺图序列帧 (Assets/frames/)
+### 4.2 贺图序列帧 (Assets/sequences/)
 序列帧必须存放在对应的文件夹内，系统会根据“风格”和“贺词”自动匹配路径：
-- **目录结构**: `assets/frames/{风格名称}/{贺词内容}/`
-- **文件名格式**: `{风格}{贺词}_{两位序号}.jpg`
-- **示例**: `assets/frames/pixel_world/冰雪聪明/pixel_world冰雪聪明_01.jpg`
-- **文件**: `_01.jpg` 到 `_16.jpg` (建议 360x480 像素，3:4 比例)
+- **目录结构**: `assets/sequences/{风格名称}/{贺词内容}/v1/`
+- **文件名格式**: `{两位序号}.jpg`
+- **示例**: `assets/sequences/pixel_world/冰雪聪明/v1/01.jpg`
+- **文件**: `01.jpg` 到 `24.jpg` (建议 360x480 像素，3:4 比例)
 
 ## 5. 通信协议 (供 Python 调用)
 前端页面通过监听 `postMessage` 事件接收指令。
