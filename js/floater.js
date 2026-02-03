@@ -30,18 +30,32 @@ const FloaterSystem = {
             });
         }
 
-        // 预加载星星迸发特效
-        for (let i = 1; i <= 12; i++) {
-            const img = new Image();
-            const num = i.toString().padStart(2, '0');
-            img.src = `assets/关卡道具-星星迸发/道具-星星迸发-xx_${num}.png`;
+        // 确保预加载容器存在
+        let preloadContainer = document.getElementById('assets-preload');
+        if (!preloadContainer) {
+            preloadContainer = document.createElement('div');
+            preloadContainer.id = 'assets-preload';
+            document.body.appendChild(preloadContainer); // 假设 body 存在
         }
 
-        // 预加载光环展开特效
+        // 预加载星星迸发特效 - 存入 DOM 防止 GC
+        this.starBurstImages = [];
         for (let i = 1; i <= 12; i++) {
             const img = new Image();
             const num = i.toString().padStart(2, '0');
-            img.src = `assets/关卡道具-光环展开/道具-光环展开-gh_${num}.png`;
+            img.src = `assets/effects/star_burst/xx_${num}.png`;
+            this.starBurstImages.push(img);
+            preloadContainer.appendChild(img);
+        }
+
+        // 预加载光环展开特效 - 存入 DOM 防止 GC
+        this.haloExpandImages = [];
+        for (let i = 1; i <= 12; i++) {
+            const img = new Image();
+            const num = i.toString().padStart(2, '0');
+            img.src = `assets/effects/halo/gh_${num}.png`;
+            this.haloExpandImages.push(img);
+            preloadContainer.appendChild(img);
         }
 
         this.refresh(window.AppState.config.greeting_words);
@@ -178,6 +192,7 @@ const FloaterSystem = {
         el.style.filter = `blur(${layerProps.blur}px) brightness(${layerProps.brightness})`;
         el.style.transform = `scale(${layerProps.scale})`;
         el.dataset.depth = depth; // 记录景别以便还原
+        el.dataset.originalScale = layerProps.scale; // 记录原始缩放比例用于点击后补偿
 
         // --- 槽位选择 ---
         let slotIndex;
@@ -257,9 +272,9 @@ const FloaterSystem = {
 
         el.addEventListener('click', (e) => {
             if (!this.isActive) return; // 弹窗打开时禁止重复点击
-            // 点击时立即播放星星迸发特效
+            // 点击时立即播放星星迸发特效 -> 移至贺卡接受按钮
             const currentZ = parseInt(el.style.zIndex) || 10;
-            this.createClickEffect(e.clientX, e.clientY, currentZ);
+            // this.createClickEffect(e.clientX, e.clientY, currentZ);
             this.handleFloaterClick(el, config);
             e.stopPropagation();
         });
@@ -329,119 +344,167 @@ const FloaterSystem = {
         this.isActive = false; // 锁定交互
 
         // 1. 立即触发补充逻辑
-        // 因为这个挂件要去展示贺卡了，它腾出的位置应该立即由新挂件补上
         if (!el._hasRefilled) {
             el._hasRefilled = true;
             this.refillOne();
         }
 
-        // 2. 暂停当前动画 (WAAPI 必须用 pause() 方法，CSS 属性无效)
+        // 2. 暂停当前动画
         if (el._anim) el._anim.pause();
         if (el._refillTimer) clearTimeout(el._refillTimer);
 
-        // 3. 记录当前几何信息与状态
-        const startRect = el.getBoundingClientRect();
-        const originalFilter = el.style.filter;
-        const originalZIndex = el.style.zIndex;
+        // 3. 获取原始 CSS 缩放比例和当前位置
+        const originalScale = parseFloat(el.dataset.originalScale) || 1;
+        const rect = el.getBoundingClientRect(); // 当前视觉位置（包含原始 scale）
+        const wrapper = document.getElementById('stage-wrapper');
+        const wrapperRect = wrapper.getBoundingClientRect();
 
-        let startScale = 1;
-        const transformMatch = el.style.transform.match(/scale\(([^)]+)\)/);
-        if (transformMatch && transformMatch[1]) {
-            startScale = parseFloat(transformMatch[1]);
+        // 4. 计算窗口缩放因子
+        const scaleFactor = wrapperRect.width / wrapper.offsetWidth || 1;
+
+        // 5. 计算天灯的视觉中心位置（相对于 wrapper）
+        const visualCenterX = (rect.left + rect.width / 2 - wrapperRect.left) / scaleFactor;
+        const visualCenterY = (rect.top + rect.height / 2 - wrapperRect.top) / scaleFactor;
+
+        // 6. 获取元素的内在尺寸（不受 CSS transform 影响）
+        const intrinsicWidth = el.offsetWidth;  // 未被 scale 影响的真实 DOM 宽度
+        const intrinsicHeight = el.offsetHeight;
+
+        // 7. 重置 transform 并设置绝对定位
+        // 关键：使用内在尺寸，并将元素定位使其中心与之前的视觉中心对齐
+        el.style.transform = 'none'; // 先移除原始 scale
+        el.style.position = 'absolute';
+        el.style.left = (visualCenterX - intrinsicWidth / 2) + 'px';
+        el.style.top = (visualCenterY - intrinsicHeight / 2) + 'px';
+        el.style.bottom = 'auto';
+        el.style.width = intrinsicWidth + 'px';
+        el.style.height = intrinsicHeight + 'px';
+        el.style.margin = '0';
+        el.style.zIndex = 160; // 天灯在光环(140)上方
+
+        wrapper.appendChild(el);
+
+        // 8. 计算飞向正中心的位移
+        const wrapperCenterX = wrapper.offsetWidth / 2;
+        const wrapperCenterY = wrapper.offsetHeight / 2;
+        const moveX = wrapperCenterX - visualCenterX;
+        const moveY = wrapperCenterY - visualCenterY;
+
+        // 9. 强制重绘
+        void el.offsetWidth;
+
+        // 10. 计算统一的目标缩放
+        const TARGET_VISUAL_WIDTH = 280; // 缩小天灯尺寸
+        const INTRINSIC_BODY_WIDTH = 120; // .floater-body 固定宽度
+        const targetScale = TARGET_VISUAL_WIDTH / INTRINSIC_BODY_WIDTH;
+
+        // 11. 应用飞入动画
+        el.style.transition = 'transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.8s ease-out';
+        el.style.filter = 'blur(0px) brightness(1.1)';
+        el.style.transform = `translate(${moveX}px, ${moveY}px) scale(${targetScale})`;
+
+        // 12. 统一吊牌大小
+        const tag = el.querySelector('.floater-tag');
+        if (tag) {
+            const DESIRED_TAG_VISUAL_WIDTH = 130;
+            const compensatedWidth = DESIRED_TAG_VISUAL_WIDTH / targetScale;
+            tag.style.width = `${compensatedWidth}px`;
         }
 
-        const stageWrapper = document.getElementById('stage-wrapper');
-        const stageRect = stageWrapper.getBoundingClientRect();
-        const stageCenterX = stageRect.left + stageRect.width / 2;
-        const stageCenterY = stageRect.top + stageRect.height / 2;
-        const elCenterX = startRect.left + startRect.width / 2;
-        const elCenterY = startRect.top + startRect.height / 2;
+        // 立即展示遮罩层
+        if (window.CardSystem && typeof window.CardSystem.showMask === 'function') {
+            window.CardSystem.showMask();
+        }
 
-        const moveX = (stageCenterX - elCenterX) / (window.AppState.scale || 1);
-        const moveY = (stageCenterY - elCenterY) / (window.AppState.scale || 1);
-
-        // 4. 执行飞入中心动画 (清除模糊，提升层级)
-        el.style.transition = 'transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.8s ease-out';
-        el.style.zIndex = 100;
-        el.style.filter = 'blur(0px) brightness(1.1)'; // 飞到中心时变亮且清晰
-        el.style.transform = `translate(${moveX}px, ${moveY}px) scale(2)`;
-
+        // 飞入动画完成后播放光环特效
         setTimeout(() => {
-            // 移动到位后，播放光环展开特效
-            // 此时物体在舞台中心，zIndex 为 100
-            this.createHaloEffect(stageCenterX, stageCenterY, 100);
+            // 修正位置：光环中心对应屏幕中心 (相对于 Wrapper)
+            const wrapperW = wrapper.offsetWidth;
+            const wrapperH = wrapper.offsetHeight;
+            const centerWrapperX = wrapperW / 2;
+            const centerWrapperY = wrapperH / 2;
+            this.createHaloEffect(centerWrapperX, centerWrapperY, 140); // 光环在天灯下方 (140 < 160)
 
-            // 延迟一点时间再打开贺卡，让特效展示一下
+            // 天灯开始渐隐（光环播放时同时渐隐，0.8秒渐隐时间）
+            el.style.transition = 'opacity 0.8s ease-out';
+            el.style.opacity = '0';
+
+            // 天灯渐隐完成后移除元素
+            setTimeout(() => {
+                if (el.parentNode) el.parentNode.removeChild(el);
+                this.isActive = true;
+            }, 800);
+
+            // 延后打开贺卡（光环开始后 600ms）
             setTimeout(() => {
                 if (window.CardSystem && typeof window.CardSystem.open === 'function') {
                     window.CardSystem.open(config);
                 }
+            }, 600);
 
-                // 绑定关闭回调
-                if (window.CardSystem) {
-                    const originalClose = window.CardSystem.onClose;
-                    window.CardSystem.onClose = () => {
-                        if (typeof originalClose === 'function') originalClose();
-
-                        // 还原挂件 (恢复原始滤镜和层级)
-                        el.style.transition = 'transform 0.6s ease-out, filter 0.6s ease-out';
-                        el.style.transform = `translate(0, 0) scale(${startScale})`;
-                        el.style.filter = originalFilter;
-                        el.style.zIndex = originalZIndex;
-
-                        setTimeout(() => {
-                            if (el._anim) el._anim.play(); // 恢复播放
-                            this.isActive = true; // 恢复交互
-                        }, 600);
-                    };
-                }
-            }, 600); // 特效播放由于是 20fps 12帧 ≈ 600ms，这里同步等待
-
-        }, 1000);
+        }, 600);
     },
 
     createClickEffect(x, y, targetZIndex) {
         if (!this.container) return;
 
-        const effect = document.createElement('div');
-        effect.className = 'star-burst';
+        // 使用 Canvas 替代 DIV
+        const canvas = document.createElement('canvas');
+        canvas.className = 'star-burst';
+
+        // 设置高分辨率画布 (300x300 对于 3rem 来说足够清晰)
+        canvas.width = 300;
+        canvas.height = 300;
 
         // 计算相对坐标 (处理缩放)
         const rect = this.container.getBoundingClientRect();
-        const scaleX = rect.width / this.container.offsetWidth;
-        const scale = scaleX || 1;
+        // Container 实际渲染宽度 / OffsetWidth
+        const scale = rect.width / this.container.offsetWidth || 1;
 
         const localX = (x - rect.left) / scale;
         const localY = (y - rect.top) / scale;
 
-        effect.style.left = localX + 'px';
-        effect.style.top = localY + 'px';
+        canvas.style.left = localX + 'px';
+        canvas.style.top = localY + 'px';
 
-        // 层级设为比点击物体低 1 级，确保在物体下方播放
-        effect.style.zIndex = (targetZIndex || 10) - 1;
+        // 层级设为比点击物体低 1 级
+        canvas.style.zIndex = (targetZIndex || 10) - 1;
 
-        // 预设第一帧背景，避免闪烁
-        effect.style.backgroundImage = `url('assets/关卡道具-星星迸发/道具-星星迸发-xx_01.png')`;
+        this.container.appendChild(canvas);
 
-        this.container.appendChild(effect);
+        const ctx = canvas.getContext('2d');
 
         // 序列帧动画
-        let frame = 2; // 从第2帧开始，因为第1帧已预设
+        let frame = 1;
         const maxFrames = 12;
-        const fps = 24; // 提高帧率减少闪烁
+        const fps = 24;
         const interval = 1000 / fps;
         let lastTime = 0;
 
+        // 立即绘制第一帧 (Sync draw to prevent empty frame)
+        if (this.starBurstImages && this.starBurstImages[0]) {
+            ctx.drawImage(this.starBurstImages[0], 0, 0, canvas.width, canvas.height);
+        }
+
         const updateFrame = (timestamp) => {
+            if (!lastTime) lastTime = timestamp;
+
+            // 超过最大帧，移除
             if (frame > maxFrames) {
-                if (effect.parentNode) effect.parentNode.removeChild(effect);
+                if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
                 return;
             }
 
             if (timestamp - lastTime >= interval) {
-                const num = frame.toString().padStart(2, '0');
-                const path = `assets/关卡道具-星星迸发/道具-星星迸发-xx_${num}.png`;
-                effect.style.backgroundImage = `url('${path}')`;
+                // 清空
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // 绘制当前帧 (frame 索引是 frame-1)，由于 startBurstImages 下标从0开始(对应01.png)
+                const img = this.starBurstImages[frame - 1];
+                if (img) {
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                }
+
                 frame++;
                 lastTime = timestamp;
             }
@@ -453,47 +516,50 @@ const FloaterSystem = {
 
     // 光环展开特效 - 点击时立即播放
     createHaloEffect(x, y, targetZIndex) {
-        if (!this.container) return;
+        // 使用 Canvas 替代 DIV
+        const canvas = document.createElement('canvas');
+        canvas.className = 'halo-expand';
 
-        const effect = document.createElement('div');
-        effect.className = 'halo-expand';
+        canvas.width = 600;
+        canvas.height = 600;
 
-        // 计算相对坐标 (处理缩放)
-        const rect = this.container.getBoundingClientRect();
-        const scaleX = rect.width / this.container.offsetWidth;
-        const scale = scaleX || 1;
+        // 直接添加到 Stage Wrapper
+        const wrapper = document.getElementById('stage-wrapper');
+        if (wrapper) wrapper.appendChild(canvas);
 
-        const localX = (x - rect.left) / scale;
-        const localY = (y - rect.top) / scale;
+        canvas.style.position = 'absolute'; // 相对 wrapper
+        canvas.style.left = x + 'px';
+        canvas.style.top = y + 'px';
+        canvas.style.zIndex = targetZIndex || 150;
 
-        effect.style.left = localX + 'px';
-        effect.style.top = localY + 'px';
-
-        // 层级设为与点击物体相同
-        effect.style.zIndex = targetZIndex || 10;
-
-        // 预设第一帧背景，避免闪烁
-        effect.style.backgroundImage = `url('assets/关卡道具-光环展开/道具-光环展开-gh_01.png')`;
-
-        this.container.appendChild(effect);
+        const ctx = canvas.getContext('2d');
 
         // 序列帧动画
-        let frame = 2; // 从第2帧开始，因为第1帧已预设
+        let frame = 1;
         const maxFrames = 12;
-        const fps = 24; // 光环展开用更快的帧率
+        const fps = 24;
         const interval = 1000 / fps;
         let lastTime = 0;
 
+        // 立即绘制第一帧
+        if (this.haloExpandImages && this.haloExpandImages[0]) {
+            ctx.drawImage(this.haloExpandImages[0], 0, 0, canvas.width, canvas.height);
+        }
+
         const updateFrame = (timestamp) => {
+            if (!lastTime) lastTime = timestamp;
+
             if (frame > maxFrames) {
-                if (effect.parentNode) effect.parentNode.removeChild(effect);
+                if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
                 return;
             }
 
             if (timestamp - lastTime >= interval) {
-                const num = frame.toString().padStart(2, '0');
-                const path = `assets/关卡道具-光环展开/道具-光环展开-gh_${num}.png`;
-                effect.style.backgroundImage = `url('${path}')`;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const img = this.haloExpandImages[frame - 1];
+                if (img) {
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                }
                 frame++;
                 lastTime = timestamp;
             }

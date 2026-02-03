@@ -43,11 +43,16 @@ const AppState = {
         // 绑定封面页按钮事件
         const startBtn = document.getElementById('start-btn');
         if (startBtn) {
-            startBtn.addEventListener('click', () => {
+            // 简单的 Touch/Click 混合监听
+            const handleStart = (e) => {
+                e.preventDefault(); // 防止双重触发
                 document.getElementById('cover-page').classList.add('hidden');
                 // 点击后才启动漂浮系统
                 if (window.FloaterSystem) window.FloaterSystem.init();
-            });
+            };
+
+            startBtn.addEventListener('click', handleStart);
+            startBtn.addEventListener('touchend', handleStart);
         } else {
             // 如果没找到按钮（异常情况），直接启动
             if (window.FloaterSystem) window.FloaterSystem.init();
@@ -114,8 +119,14 @@ const AppState = {
         }
 
         // 合并配置
-        this.config = { ...this.config, ...newConfig };
+        this.config = Object.assign({}, this.config, newConfig);
         console.log('[H5] Config updated:', this.config);
+
+        // 同步更新封面页收件人
+        const coverRecipEl = document.getElementById('cover-recipient');
+        if (coverRecipEl && this.config.recipient) {
+            coverRecipEl.innerText = this.config.recipient;
+        }
 
         // 如果还在等待消息状态，收到消息后启动 loading 序列
         if (this.isWaiting) {

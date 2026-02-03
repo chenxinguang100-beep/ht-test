@@ -9,6 +9,17 @@ const MockSystem = {
         this.panel = document.getElementById('debug-panel');
         if (!this.panel) return;
 
+        // URL 参数检查: ?debug=true
+        const isDebug = new URLSearchParams(window.location.search).get('debug') === 'true';
+
+        if (!isDebug) {
+            this.panel.style.display = 'none';
+            return;
+        }
+
+        // 默认收起 (collapsed)，配合 CSS 实现 Hover 展开
+        this.panel.classList.add('collapsed');
+
         this.renderUI();
         this.bindEvents();
     },
@@ -17,7 +28,7 @@ const MockSystem = {
         this.panel.innerHTML = `
             <div class="debug-header" id="debug-toggle">
                 <span>🔧 调试面板 (真实协议模拟)</span>
-                <span>⬆️</span>
+                <span>⬇️</span>
             </div>
             <div class="debug-content">
                 <div class="form-group">
@@ -71,8 +82,6 @@ const MockSystem = {
         const header = document.getElementById('debug-toggle');
         header.addEventListener('click', () => {
             this.panel.classList.toggle('collapsed');
-            const arrow = header.querySelector('span:last-child');
-            arrow.innerText = this.panel.classList.contains('collapsed') ? '⬆️' : '⬇️';
         });
 
         // 速度滑块显示数值

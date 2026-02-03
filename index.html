@@ -17,12 +17,8 @@
             <!-- Mac 窗口标题栏装饰 (置顶) -->
             <!-- Mac Window Header (Ported from Project B) -->
             <div class="window-header">
-                <div class="traffic-lights">
-                    <span class="light red"></span>
-                    <span class="light yellow"></span>
-                    <span class="light green"></span>
-                </div>
-                <div class="window-title">H5 动态贺卡</div>
+                <!-- 移除红黄绿按钮 -->
+                <div class="window-title">AI 动态贺卡</div>
             </div>
 
             <!-- 核心舞台包裹层 -->
@@ -30,8 +26,8 @@
                 <!-- 封面页 (现在是窗口内的内容) -->
                 <div id="cover-page" class="hidden"> <!-- 初始隐藏，等 Loading 结束后显示 -->
                     <div class="cover-content">
-                        <div class="cover-title">H5 动态贺卡</div>
-                        <button id="start-btn" class="btn-primary">放飞天灯</button>
+                        <div class="cover-title">献给 <span id="cover-recipient">亲爱的你</span> 的电子贺卡</div>
+                        <button id="start-btn" class="btn-cover-primary">放飞天灯</button>
                     </div>
                 </div>
 
@@ -50,8 +46,9 @@
                 <div id="floater-layer"></div>
 
                 <!-- 贺卡弹窗层 (放在 wrapper 内部以受圆角控制) -->
+                <div id="card-mask" class="hidden"></div>
                 <div id="card-modal" class="modal hidden">
-                    <div class="modal-overlay"></div>
+                    <!-- overlay moved out -->
                     <div class="modal-content">
                         <!-- 卡片主体 -->
                         <div class="card-body">
@@ -96,46 +93,44 @@
                                 <div class="blessing-title-box">
                                     <div id="card-pinyin" class="field-pinyin">mèng qù nà fú</div>
                                     <div id="card-title" class="field-title">萌趣纳福</div>
-                                    <!-- 迷你 Tab 切换（弱化样式） -->
-                                    <div class="mini-tabs">
-                                        <span class="mini-tab active" data-tab="meaning">寓意</span>
-                                        <span class="mini-tab-divider">|</span>
-                                        <span class="mini-tab" data-tab="prompt">Prompt</span>
-                                    </div>
                                 </div>
 
-                                <!-- 内容区域 -->
+                                <!-- 内容区域：单按钮切换 -->
                                 <div class="card-tab-content">
-                                    <!-- Tab 1: AI 寓意 -->
+                                    <!-- View 1: AI 寓意 (暖色卡片风格) -->
                                     <div id="tab-meaning" class="tab-pane active">
-                                        <div class="postcard-body">
-                                            <div class="typewriter-container" id="typewriter-meaning">
-                                                <!-- 打字机文本将注入这里 -->
+                                        <div class="meaning-card">
+                                            <div class="meaning-card-content">
+                                                <span class="meaning-label">AI寓意：</span>
+                                                <span class="meaning-text" id="meaning-content">--</span>
+                                            </div>
+                                            <div class="card-toggle-btn">
+                                                <button id="view-prompt-btn" class="btn-toggle">▶ 查看提示词</button>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Tab 2: AI Prompt -->
+                                    <!-- View 2: 生图提示词 (科技终端风格) -->
                                     <div id="tab-prompt" class="tab-pane">
-                                        <div class="prompt-info-grid">
-                                            <div class="info-row">
-                                                <span class="label">风格：</span>
-                                                <span class="value" id="prompt-info-style">风格名称</span>
+                                        <div class="prompt-terminal">
+                                            <div class="terminal-row">
+                                                <span class="terminal-label">Style:</span>
+                                                <span class="terminal-value" id="terminal-style">--</span>
                                             </div>
-                                            <div class="info-row">
-                                                <span class="label">关键词：</span>
-                                                <span class="value" id="prompt-info-text">萌趣纳福</span>
+                                            <div class="terminal-row">
+                                                <span class="terminal-label">Prompt:</span>
+                                                <span class="terminal-value terminal-prompt-text"
+                                                    id="terminal-prompt">--</span>
                                             </div>
-                                        </div>
-                                        <div class="postcard-body">
-                                            <div class="typewriter-container" id="typewriter-prompt">
-                                                <!-- Prompt 打字机文本 -->
+                                            <div class="card-toggle-btn terminal-toggle">
+                                                <button id="view-meaning-btn" class="btn-toggle btn-toggle-light">◆
+                                                    返回AI寓意</button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- 底部操作区 (绝对定位或底部对齐) -->
+                                <!-- 底部操作区 -->
                                 <div class="postcard-footer">
                                     <button id="accept-btn" class="btn-primary hidden-initially">接受祝福</button>
                                 </div>

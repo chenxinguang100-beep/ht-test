@@ -1,3 +1,11 @@
+@font-face {
+    font-family: 'FZZhunYuan-M02';
+    src: url('../assets/fonts/FZZhunYuan.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 /* 全局重置 */
 * {
     margin: 0;
@@ -11,9 +19,18 @@ body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: 'FZZhunYuan-M02', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background-color: transparent;
     /* 背景交给 stage-container */
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+input,
+select,
+textarea {
+    user-select: auto;
+    -webkit-user-select: auto;
 }
 
 /* 舞台容器 */
@@ -125,9 +142,7 @@ body {
     font-size: 0.13rem;
     /* 13px -> 0.13rem */
     color: #888;
-    /* Offset to center visually */
-    margin-right: 0.52rem;
-    /* 52px -> 0.52rem */
+    /* 移除偏移，居中显示 */
     font-weight: 500;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
@@ -201,7 +216,7 @@ html {
     transform: translateX(-50%);
     width: 60%;
     height: 40%;
-    background: radial-gradient(circle, rgba(255, 230, 100, 0.4) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(255, 220, 180, 0.35) 0%, transparent 70%);
     pointer-events: none;
     z-index: -1;
 }
@@ -210,11 +225,11 @@ html {
 
     0%,
     100% {
-        filter: drop-shadow(0 0 0.08rem rgba(255, 215, 0, 0.3));
+        filter: drop-shadow(0 0 0.08rem rgba(255, 200, 150, 0.3));
     }
 
     50% {
-        filter: drop-shadow(0 0 0.18rem rgba(255, 215, 0, 0.6));
+        filter: drop-shadow(0 0 0.18rem rgba(200, 180, 255, 0.5));
     }
 }
 
@@ -336,11 +351,12 @@ html {
 
 /* 光环展开特效 - 点击天灯时立即播放 */
 .halo-expand {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 5rem;
+    height: 5rem;
     z-index: 25;
 }
 
+/* 调试面板 (Mock System) - 保持 px，因为它独立于舞台缩放 */
 /* 调试面板 (Mock System) - 保持 px，因为它独立于舞台缩放 */
 .debug-panel {
     position: fixed;
@@ -349,14 +365,66 @@ html {
     width: 320px;
     background: rgba(255, 255, 255, 0.98);
     border-top-right-radius: 12px;
-    --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    /* --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); */
 
     /* 封面页层级最高 */
-    --z-cover: 1000;
+    /* --z-cover: 1000; */
     z-index: 9999;
-    padding: 20px;
+    /* padding: 20px; 移除 padding，改由子元素控制 */
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-size: 14px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.debug-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    font-weight: bold;
+    color: #333;
+    user-select: none;
+}
+
+.debug-header:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+/* 箭头旋转动画 */
+.debug-header span:last-child {
+    transition: transform 0.3s ease;
+}
+
+.debug-panel.collapsed .debug-header span:last-child {
+    transform: rotate(180deg);
+}
+
+.debug-content {
+    padding: 20px;
+    max-height: 80vh;
+    /* 限制最大高度 */
+    overflow-y: auto;
+}
+
+/* 收起状态：完全下移，只露出一小条触发区域 */
+/* 由于 header 在顶部，我们将整个面板下移，只露出 header 的一部分或者全部? 
+   h5-demo 是下移 height-6px。
+   考虑到我们需要露出 header 方便点击，我们可以露出 header。
+   或者按照用户要求“基本全隐藏直到鼠标滑动到附近才展开”。
+*/
+.debug-panel.collapsed {
+    /* 下移 100%，保留 6px 触发区 */
+    transform: translateY(calc(100% - 6px));
+    opacity: 0.8;
+}
+
+/* 鼠标悬停在触发区时自动展开 */
+.debug-panel.collapsed:hover {
+    transform: translateY(0);
+    opacity: 1;
 }
 
 /* --- 封面页 --- */
@@ -367,8 +435,8 @@ html {
     left: 0;
     width: 100%;
     height: 100%;
-    background: #0d1b2a;
-    /* 深色背景 */
+    background: rgba(13, 27, 42, 0.5);
+    /* 50% 透明度深色背景 */
     z-index: 90;
     /* 低于标题栏 (100) 但高于其他内容 */
     display: flex;
@@ -464,12 +532,47 @@ html {
 }
 
 .cover-title {
-    font-size: 0.8rem;
-    /* 80px */
+    font-size: 0.4rem;
+    /* 40px */
     margin-bottom: 0.6rem;
     font-weight: bold;
     text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
-    letter-spacing: 0.1rem;
+    letter-spacing: 0.05rem;
+}
+
+/* 封面页专属按钮 - 呼吸动画 */
+.btn-cover-primary {
+    display: inline-block;
+    padding: 0.16rem 0.5rem;
+    font-size: 0.2rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ffb347 100%);
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 0.04rem 0.15rem rgba(255, 107, 53, 0.4);
+    font-family: 'FZZhunYuan-M02', "方正准圆", sans-serif;
+    animation: breathe 2s ease-in-out infinite;
+}
+
+.btn-cover-primary:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0.06rem 0.2rem rgba(255, 107, 53, 0.5);
+}
+
+@keyframes breathe {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0.04rem 0.15rem rgba(255, 107, 53, 0.4);
+    }
+
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0.08rem 0.25rem rgba(255, 107, 53, 0.6);
+    }
 }
 
 @keyframes fadeIn {
@@ -484,34 +587,72 @@ html {
     }
 }
 
+/* 强制指定贺卡内部文本字体 */
+.field-pinyin,
+.field-title,
+.field-meaning,
+#typewriter-meaning,
+.field-to,
+#typewriter-prompt,
+.btn-primary {
+    font-family: 'FZZhunYuan-M02', "Founder Rounded", "Microsoft YaHei", sans-serif !important;
+}
+
+/* --- Mock Debug Panel (Optimized) --- */
+.debug-panel {
+    position: fixed;
+    bottom: 0;
+    right: 20px;
+    /* Leave some space from edge */
+    width: 320px;
+    background: rgba(0, 0, 0, 0.8);
+    /* Semi-transparent black */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    color: #fff;
+    z-index: 9999;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: none;
+}
+
 .debug-panel.collapsed {
-    /* 只露出 Header */
-    transform: translateY(calc(100% - 50px));
+    /* Ultra minimized: show only 6px edge */
+    transform: translateY(calc(100% - 6px));
+}
+
+.debug-panel.collapsed:hover {
+    /* Peek header on hover */
+    transform: translateY(calc(100% - 40px));
 }
 
 .debug-header {
-    height: 30px;
+    height: 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    border-bottom: 1px solid #eee;
-    margin-bottom: 15px;
-    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0 15px;
     font-weight: bold;
-    font-size: 16px;
-    color: #333;
-    user-select: none;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px 12px 0 0;
 }
 
 .debug-header:hover {
-    color: #1890ff;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffd700;
 }
 
 .debug-content {
-    /* 防止折叠时内容溢出 */
-    max-height: 80vh;
+    /* Prevent overflow */
+    max-height: 60vh;
     overflow-y: auto;
+    padding: 15px;
 }
 
 .debug-content .form-group {
@@ -520,68 +661,72 @@ html {
 
 .debug-content label {
     display: block;
-    margin-bottom: 8px;
-    font-size: 13px;
-    color: #555;
-    font-weight: 500;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
 }
 
-/* 多选框组样式优化 */
+/* Checkbox Group */
 #mock-greeting-group {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    /* Chrome 59 不支持 Flex/Grid 的 gap 属性 */
-    /* gap: 8px; */
-    background: #f9f9f9;
+    background: rgba(0, 0, 0, 0.3);
     padding: 10px;
     border-radius: 6px;
-    border: 1px solid #eee;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* 使用 margin 模拟 gap */
 #mock-greeting-group label {
-    margin-bottom: 8px;
-    margin-right: 8px;
-    font-weight: normal;
-    cursor: pointer;
+    margin: 0;
+    padding: 4px;
+    color: rgba(255, 255, 255, 0.9);
     display: flex;
     align-items: center;
 }
 
-#mock-greeting-group input {
-    margin-right: 6px;
-}
-
+/* Inputs & Selects Dark Theme */
 .debug-content select,
 .debug-content input[type=text] {
     width: 100%;
     padding: 8px 10px;
-    border: 1px solid #ddd;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 6px;
+    color: #fff;
     outline: none;
-    font-size: 14px;
-    transition: border-color 0.2s;
+    font-size: 13px;
 }
 
-.debug-content select:focus,
-.debug-content input[type=text]:focus {
-    border-color: #1890ff;
+.debug-content select option {
+    background: #333;
+    color: #fff;
 }
 
 .debug-content button {
     width: 100%;
     padding: 10px;
     background-color: #1890ff;
+    /* Keep primary color */
     color: white;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    margin-top: 15px;
-    font-size: 15px;
+    margin-top: 10px;
+    font-size: 14px;
     font-weight: 600;
-    transition: background-color 0.2s;
 }
 
 .debug-content button:hover {
-    background-color: #096dd9;
+    background-color: #40a9ff;
+}
+
+/* --- 资源预加载容器 (辅助 Canvas 缓存) --- */
+#assets-preload {
+    width: 0;
+    height: 0;
+    opacity: 0;
+    position: absolute;
+    z-index: -9999;
+    overflow: hidden;
+    visibility: hidden;
 }

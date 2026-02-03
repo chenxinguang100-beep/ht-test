@@ -11,7 +11,7 @@ const CardSystem = {
 
     // 状态
     currentFrame: 1,
-    totalFrames: 16,
+    totalFrames: 24,
     isPlaying: false,
     playInterval: null,
     isDragging: false,
@@ -21,6 +21,28 @@ const CardSystem = {
     // 资源缓存
     frameImages: [],
     imagesLoaded: false,
+
+    // 辅助：绑定点击/触摸事件 (解决 300ms 延迟)
+    addTapListener(element, callback) {
+        if (!element) return;
+        let isTouch = false;
+
+        // Touch End
+        element.addEventListener('touchend', (e) => {
+            isTouch = true;
+            e.preventDefault(); // 阻止后续的 mouse 事件
+            callback(e);
+
+            // 重置标志位
+            setTimeout(() => { isTouch = false; }, 500);
+        }, { passive: false });
+
+        // Click (作为回退，或 PC 端)
+        element.addEventListener('click', (e) => {
+            if (isTouch) return; // 如果已经触发过 touch，忽略 click
+            callback(e);
+        });
+    },
 
     init() {
         this.modal = document.getElementById('card-modal');
@@ -83,21 +105,48 @@ const CardSystem = {
 
     bindEvents() {
         // 关闭/接受祝福
-        document.getElementById('accept-btn').addEventListener('click', () => {
-            this.close();
+        // 关闭/接受祝福
+        // 关闭/接受祝福
+        const acceptBtn = document.getElementById('accept-btn');
+        this.addTapListener(acceptBtn, (e) => {
+            // 播放点击特效
+            let cx, cy;
+            if (e.changedTouches && e.changedTouches.length > 0) {
+                const touch = e.changedTouches[0];
+                const rect = e.target.getBoundingClientRect();
+                cx = rect.left + rect.width / 2;
+                cy = rect.top + rect.height / 2;
+            } else {
+                const rect = e.currentTarget.getBoundingClientRect();
+                cx = rect.left + rect.width / 2;
+                cy = rect.top + rect.height / 2;
+            }
+
+            this.playClickEffect(cx, cy);
+
+            // 延迟关闭，让特效展示一下 (400ms)
+            setTimeout(() => {
+                this.close();
+            }, 400);
         });
 
-        // Tab 切换逻辑 (使用新的 mini-tab 选择器)
-        const tabs = document.querySelectorAll('.mini-tab');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', (e) => {
-                const targetTab = e.currentTarget.dataset.tab;
-                this.switchTab(targetTab);
-            });
+        // 内容切换按钮 (优化 Touch 响应)
+        const viewPromptBtn = document.getElementById('view-prompt-btn');
+        const viewMeaningBtn = document.getElementById('view-meaning-btn');
+
+        this.addTapListener(viewPromptBtn, () => {
+            this.switchTab('prompt');
+        });
+
+        this.addTapListener(viewMeaningBtn, () => {
+            this.switchTab('meaning');
         });
 
         // 进度条拖动
         if (this.slider) {
+            // 动态设置最大值
+            this.slider.max = this.totalFrames;
+
             this.slider.addEventListener('input', (e) => {
                 this.pause();
                 this.currentFrame = parseInt(e.target.value);
@@ -147,27 +196,20 @@ const CardSystem = {
         }
     },
 
-    // 切换 Tab
+    // 切换 Tab（内容区域）
     switchTab(tabId) {
-        // Update Nav (使用 mini-tab)
-        const tabs = document.querySelectorAll('.mini-tab');
-        tabs.forEach(t => {
-            if (t.dataset.tab === tabId) t.classList.add('active');
-            else t.classList.remove('active');
-        });
-
-        // Update Content
         const panes = document.querySelectorAll('.tab-pane');
         panes.forEach(p => {
-            // Chrome 59 compat: remove/add classes manually
             p.classList.remove('active');
             if (p.id === 'tab-' + tabId) {
                 p.classList.add('active');
             }
         });
 
-        // 如果切换到 Prompt 且尚未打印过，可以触发打印 (可选)
-        // 这里简化：每次切 Tab 不重置打印，只在 Open 时重置
+        // 切换到提示词 tab 时触发打字机效果
+        if (tabId === 'prompt' && this._pendingPromptText) {
+            this.startTypewriterNoCursor('terminal-prompt', this._pendingPromptText, 30);
+        }
     },
 
     // 风格友好名称映射
@@ -184,6 +226,10 @@ const CardSystem = {
         const recipient = config.recipient || '妈妈';
         const recipEl = document.getElementById('card-recipient');
         if (recipEl) recipEl.innerText = recipient;
+
+        // 同步更新封面页收件人
+        const coverRecipEl = document.getElementById('cover-recipient');
+        if (coverRecipEl) coverRecipEl.innerText = recipient;
 
         // 更新提示词信息窗的数据
         // 兼容 ES6 (no optional chaining)
@@ -216,14 +262,40 @@ const CardSystem = {
         }
     },
 
-    open(floaterConfig) {
+    // 显示遮罩层 (不显示内容)
+    showMask() {
         if (!this.modal) this.init();
+
+        // 显示独立遮罩
+        const mask = document.getElementById('card-mask');
+        if (mask) {
+            mask.classList.remove('hidden');
+            mask.style.display = 'block';
+        }
 
         this.modal.classList.remove('hidden');
         this.modal.style.display = 'flex';
+        // 确保卡片内容处于初始隐藏状态
+        const cardBody = this.modal.querySelector('.card-body');
+        if (cardBody) {
+            cardBody.classList.remove('active');
+        }
+    },
 
-        // 重置 Tab 到 Meaning
+    open(floaterConfig) {
+        // 先确保遮罩开启 (双重保险)
+        this.showMask();
+
+        // 重置 Tab 到寓意页
         this.switchTab('meaning');
+
+        // 标记 active 触发 CSS 动画
+        const cardBody = this.modal.querySelector('.card-body');
+        if (cardBody) {
+            // 强制重绘以确保动画重播 (Reflow hack)
+            void cardBody.offsetWidth;
+            cardBody.classList.add('active');
+        }
 
         // 绑定内容 & 打字机效果
         const titleEl = document.getElementById('card-title');
@@ -232,27 +304,63 @@ const CardSystem = {
         if (titleEl) titleEl.innerText = floaterConfig.text || '...';
         if (pinyinEl) pinyinEl.innerText = floaterConfig.pinyin || '';
 
+        // --- 动态邮票逻辑 ---
+        const stampBox = document.getElementById('stamp-box');
+        if (stampBox) {
+            let stampPath = 'assets/stamp_wealth.png'; // 默认
+
+            // 根据关键词选择邮票
+            if (floaterConfig.key === 'burger') {
+                stampPath = 'assets/stamp_burger.png';
+            } else if (floaterConfig.key === 'snowflake') {
+                stampPath = 'assets/stamp_snowflake_elsa.png';
+            }
+
+            // 瑞雪呈祥单独使用 Elsa 邮票 (保留旧逻辑兼容)
+            if (floaterConfig.key === 'frosted_blindbox') { // 可能是风格key混淆，修正为snowflake
+                stampPath = 'assets/stamp_snowflake_elsa.png';
+            }
+
+            // 清空旧占位符，插入新图片
+            stampBox.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = stampPath;
+            img.alt = 'Stamp';
+            stampBox.appendChild(img);
+        }
+
         this.updateData(window.AppState.config);
 
-        // 准备打字机文本
+        // 渲染寓意内容（无打字机效果）
         const meaningText = floaterConfig.meaning || "愿你快乐每一天！";
-        const promptText = floaterConfig.ai_prompt || "AI Prompt Loading...";
+        const meaningContent = document.getElementById('meaning-content');
+        if (meaningContent) {
+            meaningContent.innerText = meaningText;
+        }
 
-        // 启动打字机 (Meaning) -> 完成后显示按钮
-        this.startTypewriter('typewriter-meaning', meaningText, 30, () => {
-            // Typing done callback
+        // 渲染提示词终端内容
+        const styleDisplayName = this.styleNames[window.AppState.config.card_style] || window.AppState.config.card_style;
+        const terminalStyle = document.getElementById('terminal-style');
+        if (terminalStyle) {
+            terminalStyle.innerText = styleDisplayName;
+        }
+
+        const promptText = floaterConfig.ai_prompt || "AI Prompt Loading...";
+        const terminalPrompt = document.getElementById('terminal-prompt');
+        if (terminalPrompt) {
+            // 存储提示词文本，切换到 prompt tab 时再触发打字机效果
+            this._pendingPromptText = promptText;
+            terminalPrompt.innerText = ''; // 清空，等待打字机
+        }
+
+        // 延迟显示「接受祝福」按钮（给用户阅读时间）
+        setTimeout(() => {
             const btn = document.getElementById('accept-btn');
             if (btn) {
                 btn.classList.remove('hidden-initially');
                 btn.classList.add('fade-in-up');
             }
-        });
-
-        // 同时也重置 Prompt 的打字机，但不立即播放? 还是可以一起播放? 
-        // 既然 Tab 隐藏了 content，并在CSS用了display:none，
-        // 最好是一起准备好，或者切过去再播。
-        // 简单起见：一起播。
-        this.startTypewriter('typewriter-prompt', promptText, 20); // Faster prompt
+        }, 800);
 
         // 隐藏按钮初始状态
         const btn = document.getElementById('accept-btn');
@@ -269,8 +377,8 @@ const CardSystem = {
         this.currentKey = currentKey;
         this.preloadFrames(currentStyle, currentKey);
 
-        // 逻辑修改：起始帧设为第6张
-        this.currentFrame = 6;
+        // 逻辑修改：起始帧设为第1张
+        this.currentFrame = 1;
         this.renderFrame();
         this.updateSlider();
 
@@ -280,7 +388,7 @@ const CardSystem = {
         }
     },
 
-    // 打字机效果
+    // 打字机效果（带光标）
     startTypewriter(elementId, text, speed = 50, callback) {
         const container = document.getElementById(elementId);
         if (!container) return;
@@ -312,12 +420,53 @@ const CardSystem = {
         container._typeInterval = setInterval(type, speed);
     },
 
+    // 打字机效果（无光标，仅动画）
+    startTypewriterNoCursor(elementId, text, speed = 50, callback) {
+        const container = document.getElementById(elementId);
+        if (!container) return;
+
+        container.innerHTML = ''; // Clear
+
+        let index = 0;
+
+        // Clear existing interval if any
+        if (container._typeInterval) clearInterval(container._typeInterval);
+
+        const type = () => {
+            if (index < text.length) {
+                const char = text.charAt(index);
+                container.textContent += char;
+                index++;
+            } else {
+                clearInterval(container._typeInterval);
+                if (callback) callback();
+            }
+        };
+
+        container._typeInterval = setInterval(type, speed);
+    },
+
     // 回调钩子
     onClose: null,
 
     close() {
         if (!this.modal) return;
+
         this.modal.classList.add('hidden');
+
+        // Hide mask
+        const mask = document.getElementById('card-mask');
+        if (mask) {
+            mask.classList.add('hidden');
+            setTimeout(() => { mask.style.display = 'none'; }, 300);
+        }
+
+        // Reset active state
+        const cardBody = this.modal.querySelector('.card-body');
+        if (cardBody) cardBody.classList.remove('active');
+
+
+
         this.pause();
 
         if (this.onClose) {
@@ -344,23 +493,52 @@ const CardSystem = {
 
         if (this.playInterval) clearInterval(this.playInterval);
 
-        // 逻辑修改：速度变慢 (100ms -> 150ms)
+        // 逻辑修改：速度调整 (80ms，约 12.5 FPS)
         this.playInterval = setInterval(() => {
             this.currentFrame++;
 
-            // 逻辑修改：播放到16帧后，从第1张开始循环
+            // 逻辑修改：播放到24帧后，暂停0.5秒再从头开始
             if (this.currentFrame > this.totalFrames) {
-                this.currentFrame = 1;
+                // 暂时清除定时器
+                clearInterval(this.playInterval);
+                this.playInterval = null;
+                this.isPlaying = false; // 关键修复
+
+                // 停顿 500ms
+                this.pauseTimeout = setTimeout(() => {
+                    this.currentFrame = 1;
+                    this.renderFrame();
+                    this.updateSlider();
+                    // 重新启动播放
+                    this.play();
+                }, 500);
+
+                return; // 这一帧不渲染（或者保持最后一帧？）
+                // 如果 return，画面停留在 > totalFrames，renderFrame处理了吗？
+                // renderFrame img = this.frameImages[this.currentFrame]
+                // if currentFrame > totalFrames, img won't exist.
+                // So we should clamp rendering or keep last frame?
+                // Before pause, currentFrame was totalFrames.
+                // In this tick, it became totalFrames + 1.
+                // So we shouldn't render totalFrames + 1.
+                // We should just pause.
             }
 
             this.updateSlider();
             this.renderFrame();
-        }, 150);
+        }, 80);
     },
 
     pause() {
         this.isPlaying = false;
-        if (this.playInterval) clearInterval(this.playInterval);
+        if (this.playInterval) {
+            clearInterval(this.playInterval);
+            this.playInterval = null;
+        }
+        if (this.pauseTimeout) {
+            clearTimeout(this.pauseTimeout);
+            this.pauseTimeout = null;
+        }
     },
 
     updateSlider() {
@@ -449,6 +627,39 @@ const CardSystem = {
             this.ctx.fillText(`Style: ${window.AppState.config.card_style}`, width / 2, height / 2 + fontSizeBig * 0.8);
             this.ctx.fillText(`(Loading...)`, width / 2, height / 2 + fontSizeBig * 1.2);
         }
+    },
+
+    playClickEffect(x, y) {
+        const images = window.FloaterSystem ? window.FloaterSystem.starBurstImages : [];
+        if (!images || images.length === 0) return;
+
+        const canvas = document.createElement('canvas');
+        canvas.style.position = 'fixed';
+        canvas.style.left = (x - 150) + 'px';
+        canvas.style.top = (y - 150) + 'px';
+        canvas.style.width = '300px';
+        canvas.style.height = '300px';
+        canvas.style.zIndex = '20000';
+        canvas.style.pointerEvents = 'none';
+        canvas.width = 300;
+        canvas.height = 300;
+
+        document.body.appendChild(canvas);
+
+        const ctx = canvas.getContext('2d');
+        let frame = 0;
+        const animate = () => {
+            ctx.clearRect(0, 0, 300, 300);
+            if (frame >= images.length) {
+                if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+                return;
+            }
+            const img = images[frame];
+            if (img && img.complete) ctx.drawImage(img, 0, 0, 300, 300);
+            frame++;
+            setTimeout(() => requestAnimationFrame(animate), 40);
+        };
+        requestAnimationFrame(animate);
     }
 };
 
