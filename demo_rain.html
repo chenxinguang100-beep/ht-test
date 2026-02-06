@@ -1,175 +1,197 @@
 <!DOCTYPE html>
 <!-- saved from url=(0064)https://kp.huodong.codeclass888.com/b2c-python-h5/page/code-rain -->
-<html lang="en" class="hairlines" style="font-size: 144.714px;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <script type="module" crossorigin="" src="./代码雨测试_files/polyfills-eb0d31d1.js"></script>
+<html lang="en" class="hairlines" style="font-size: 144.714px;">
 
-        
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-        <title>智慧</title>
-      <script type="module" crossorigin="" src="./代码雨测试_files/index-1aab2333.js"></script>
-      <link rel="stylesheet" href="./代码雨测试_files/index-1d52a500.css">
-      <script type="module">import.meta.url;import("_").catch(()=>1);(async function*(){})().next();if(location.protocol!="file:"){window.__vite_is_modern_browser=true}</script>
-      <script type="module">!function(){if(window.__vite_is_modern_browser)return;console.warn("vite: loading legacy chunks, syntax error above and the same error below should be ignored");var e=document.getElementById("vite-legacy-polyfill"),n=document.createElement("script");n.src=e.src,n.onload=function(){System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))},document.body.appendChild(n)}();</script>
-    <script src="./代码雨测试_files/jweixin-1.6.0.js"></script><style>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <script type="module" crossorigin="" src="./代码雨测试_files/polyfills-eb0d31d1.js"></script>
 
-        html, body {
-            width: 100%;
-            /* height: 100%; */
-        }
 
-        .page-loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            flex-direction: column;
-            align-items: center;
-            /* background: #000; */
-            /* background: rgba(0, 0, 0, 0.2); */
-        }
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>智慧</title>
+  <script type="module" crossorigin="" src="./代码雨测试_files/index-1aab2333.js"></script>
+  <link rel="stylesheet" href="./代码雨测试_files/index-1d52a500.css">
+  <script
+    type="module">import.meta.url; import("_").catch(() => 1); (async function* () { })().next(); if (location.protocol != "file:") { window.__vite_is_modern_browser = true }</script>
+  <script
+    type="module">!function () { if (window.__vite_is_modern_browser) return; console.warn("vite: loading legacy chunks, syntax error above and the same error below should be ignored"); var e = document.getElementById("vite-legacy-polyfill"), n = document.createElement("script"); n.src = e.src, n.onload = function () { System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src')) }, document.body.appendChild(n) }();</script>
+  <script src="./代码雨测试_files/jweixin-1.6.0.js"></script>
+  <style>
+    html,
+    body {
+      width: 100%;
+      /* height: 100%; */
+    }
 
-        .page-loading span {
-            color: #666;
-            font-size: 1.4vw;
-            font-family: "Open Sans",sans-serif;
-            /* margin-bottom: 2vw; */
-            font-weight: 400;
-            padding-left: 1vw;
-        }
+    .page-loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      /* background: #000; */
+      /* background: rgba(0, 0, 0, 0.2); */
+    }
 
-        .page-loading .loading {
-            width: 6vw;
-            height: 6vw;
-            /* height: 100px; */
-            position: relative;
-        }
-
-.page-loading .shape {
-    width: 25%;
-    height: 25%;
-    position: absolute;
-    border-radius: 50%;
-    top: 40%;
-}
-
-.page-loading .shape-1 {
-  background-color: #8bed3a;
-  animation: animationShape1 1s ease infinite;
-}
-
-.page-loading .shape-2 {
-  background-color: #fcd837;
-  left: 25%;
-}
-
-.page-loading .shape-3 {
-  background-color: #f9a11f;
-  left: 50%;
-}
-
-.page-loading .shape-4 {
-  background-color: #f27c21;
-  left: 75%;
-  animation: animationShape4 1s ease infinite;
-}
-
-@media screen and (max-width: 800px) { 
-
-  .page-loading span {
-        color: #666;
-        font-size: 2.8vw;
-        font-family: "Open Sans",sans-serif;
-        /* margin-bottom: 2vw; */
-        font-weight: 400;
-        padding-left: 2vw;
+    .page-loading span {
+      color: #666;
+      font-size: 1.4vw;
+      font-family: "Open Sans", sans-serif;
+      /* margin-bottom: 2vw; */
+      font-weight: 400;
+      padding-left: 1vw;
     }
 
     .page-loading .loading {
+      width: 6vw;
+      height: 6vw;
+      /* height: 100px; */
+      position: relative;
+    }
+
+    .page-loading .shape {
+      width: 25%;
+      height: 25%;
+      position: absolute;
+      border-radius: 50%;
+      top: 40%;
+    }
+
+    .page-loading .shape-1 {
+      background-color: #8bed3a;
+      animation: animationShape1 1s ease infinite;
+    }
+
+    .page-loading .shape-2 {
+      background-color: #fcd837;
+      left: 25%;
+    }
+
+    .page-loading .shape-3 {
+      background-color: #f9a11f;
+      left: 50%;
+    }
+
+    .page-loading .shape-4 {
+      background-color: #f27c21;
+      left: 75%;
+      animation: animationShape4 1s ease infinite;
+    }
+
+    @media screen and (max-width: 800px) {
+
+      .page-loading span {
+        color: #666;
+        font-size: 2.8vw;
+        font-family: "Open Sans", sans-serif;
+        /* margin-bottom: 2vw; */
+        font-weight: 400;
+        padding-left: 2vw;
+      }
+
+      .page-loading .loading {
         width: 12vw;
         height: 12vw;
         /* height: 100px; */
         position: relative;
+      }
+
     }
 
-}
+    @keyframes animationShape1 {
+      0% {
+        left: -25%;
+        top: 0.02604rem;
+      }
 
-@keyframes animationShape1 {
-  0% {
-    left: -25%;
-    top: 0.02604rem;
-  }
+      25% {
+        left: 0;
+        top: 40%;
+      }
 
-  25% {
-    left: 0;
-    top: 40%;
-  }
+      50% {
+        left: 0;
+        top: 40%;
+      }
 
-  50% {
-    left: 0;
-    top: 40%;
-  }
+      75% {
+        left: 0;
+        top: 40%;
+      }
 
-  75% {
-    left: 0;
-    top: 40%;
-  }
+      100% {
+        left: -25%;
+        top: 0.02604rem;
+      }
+    }
 
-  100% {
-    left: -25%;
-    top: 0.02604rem;
-  }
-}
+    @keyframes animationShape4 {
+      0% {
+        left: 75%;
+        top: 40%;
+      }
 
-@keyframes animationShape4 {
-  0% {
-    left: 75%;
-    top: 40%;
-  }
+      25% {
+        left: 75%;
+        top: 40%;
+      }
 
-  25% {
-    left: 75%;
-    top: 40%;
-  }
+      50% {
+        left: 125%;
+        top: 0.02604rem;
+      }
 
-  50% {
-    left: 125%;
-    top: 0.02604rem;
-  }
+      75% {
+        left: 75%;
+        top: 40%;
+      }
 
-  75% {
-    left: 75%;
-    top: 40%;
-  }
-
-  100% {
-    left: 75%;
-    top: 40%;
-  }
-}
-    </style><link rel="modulepreload" as="script" crossorigin="" href="https://kp.huodong.codeclass888.com/b2c-python-h5/assets/CodeRainPage-53a5698f.js"><link rel="modulepreload" as="script" crossorigin="" href="https://kp.huodong.codeclass888.com/b2c-python-h5/assets/ide-41c67edd.js"><link rel="modulepreload" as="script" crossorigin="" href="https://kp.huodong.codeclass888.com/b2c-python-h5/assets/fade-in-scale-up.cssr-b7551266.js"><link rel="stylesheet" href="./代码雨测试_files/CodeRainPage-7e358252.css"></head>
-    
-    
-
-    <body class="pc-screen pc-modal pc-frame" style="font-size: 24px;">
-        <div id="app" data-v-app=""><!----><div data-v-f86f4dfa="" class="page code-rain-page"><div class="title">Program Window</div><audio loop=""></audio><!----><div class="panel"><!----><!----></div><!----></div></div>
-        <div class="page-loading">
-            <span>LOADING</span>
-            <div class="loading">
-                <div class="shape shape-1"></div>
-                <div class="shape shape-2"></div>
-                <div class="shape shape-3"></div>
-                <div class="shape shape-4"></div>
-              </div>
-        </div>
-      <script nomodule="">!function(){var e=document,t=e.createElement("script");if(!("noModule"in t)&&"onbeforeload"in t){var n=!1;e.addEventListener("beforeload",(function(e){if(e.target===t)n=!0;else if(!e.target.hasAttribute("nomodule")||!n)return;e.preventDefault()}),!0),t.type="module",t.src=".",e.head.appendChild(t),t.remove()}}();</script>
-      <script nomodule="" crossorigin="" id="vite-legacy-polyfill" src="./代码雨测试_files/polyfills-legacy-387f884c.js"></script>
-      <script nomodule="" crossorigin="" id="vite-legacy-entry" data-src="/b2c-python-h5/assets/index-legacy-03f32165.js">System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))</script>
-    
+      100% {
+        left: 75%;
+        top: 40%;
+      }
+    }
+  </style>
+  <link rel="modulepreload" as="script" crossorigin="" href="./代码雨测试_files/CodeRainPage-53a5698f.js">
+  <link rel="modulepreload" as="script" crossorigin="" href="./代码雨测试_files/ide-41c67edd.js">
+  <link rel="modulepreload" as="script" crossorigin="" href="./代码雨测试_files/fade-in-scale-up.cssr-b7551266.js">
+  <link rel="stylesheet" href="./代码雨测试_files/CodeRainPage-7e358252.css">
+</head>
 
 
-<div data-v-f86f4dfa="" class="share-panel"><!----><!----></div></body></html>
+
+<body class="pc-screen pc-modal pc-frame" style="font-size: 24px;">
+  <div id="app" data-v-app=""><!---->
+    <div data-v-f86f4dfa="" class="page code-rain-page">
+      <div class="title">Program Window</div><audio loop=""></audio><!---->
+      <div class="panel"><!----><!----></div><!---->
+    </div>
+  </div>
+  <div class="page-loading">
+    <span>LOADING</span>
+    <div class="loading">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+      <div class="shape shape-4"></div>
+    </div>
+  </div>
+  <script
+    nomodule="">!function () { var e = document, t = e.createElement("script"); if (!("noModule" in t) && "onbeforeload" in t) { var n = !1; e.addEventListener("beforeload", (function (e) { if (e.target === t) n = !0; else if (!e.target.hasAttribute("nomodule") || !n) return; e.preventDefault() }), !0), t.type = "module", t.src = ".", e.head.appendChild(t), t.remove() } }();</script>
+  <script nomodule="" crossorigin="" id="vite-legacy-polyfill"
+    src="./代码雨测试_files/polyfills-legacy-387f884c.js"></script>
+  <script nomodule="" crossorigin="" id="vite-legacy-entry"
+    data-src="/b2c-python-h5/assets/index-legacy-03f32165.js">System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))</script>
+
+
+
+  <div data-v-f86f4dfa="" class="share-panel"><!----><!----></div>
+</body>
+
+</html>
