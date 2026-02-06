@@ -72,6 +72,7 @@ const MockSystem = {
                     </select>
                 </div>
 
+                <button id="mock-ready-btn" style="background: #2196F3; margin-bottom: 8px;">📡 发送 Ready 事件</button>
                 <button id="mock-send-btn">发送指令 (Simulate PostMessage)</button>
 
                 <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
@@ -96,6 +97,17 @@ const MockSystem = {
         const speedDisplay = document.getElementById('speed-display');
         speedInput.addEventListener('input', (e) => {
             speedDisplay.innerText = e.target.value + 's';
+        });
+
+        // 发送 Ready 事件（模拟 H5 告知父容器已加载完成）
+        document.getElementById('mock-ready-btn').addEventListener('click', () => {
+            const readyMsg = { cmd: 'ready' };
+
+            // 向父容器发送
+            window.parent.postMessage(readyMsg, '*');
+
+            console.log('[Mock] Ready event sent:', readyMsg);
+            alert('✅ Ready 事件已发送！\n\n在真实环境中，Python 端收到此事件后会调用 _onReady() 发送配置。');
         });
 
         // 发送指令
