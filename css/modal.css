@@ -186,7 +186,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    padding: 0.3rem 0.3rem 0.2rem 0.3rem;
+    padding: 0.3rem 0.3rem 0.1rem 0.3rem;
     /* 增加内边距 */
     color: #333;
     font-family: "FangSong", "STFangsong", "SimSun", serif;
@@ -405,13 +405,13 @@
 /* 明信片头部 (To & Title) */
 .postcard-header {
     margin-bottom: 0.05rem;
-    margin-top: 0.6rem;
+    margin-top: 0.4rem;
     /* 减小上边距 */
     padding-left: 0.1rem;
 }
 
 .field-to {
-    font-size: 0.24rem;
+    font-size: 0.22rem;
     /* 缩小 */
     color: #333;
     margin-bottom: 0.05rem;
@@ -425,14 +425,14 @@
     border-bottom: 2px solid #000;
     padding: 0 0.1rem;
     margin-left: 0.1rem;
-    font-size: 0.28rem;
+    font-size: 0.22rem;
     /* 缩小 */
 }
 
 /* 标题区 */
 .blessing-title-box {
     text-align: center;
-    margin: 0.2rem 0 0.3rem 0;
+    margin: 0.15rem 0 0.15rem 0;
     position: relative;
 }
 
@@ -513,7 +513,7 @@
 /* 底部按钮区 */
 .postcard-footer {
     height: auto;
-    padding: 0.2rem 0;
+    padding: 0.15rem 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -655,20 +655,23 @@ input[type=range]::-webkit-slider-thumb {
         overflow-y: auto;
     }
 
-    /* 小屏下邮戳区域缩小 */
+    /* 小屏下邮戳区域 - 优化尺寸避免过度缩小 */
     .postcard-stamp-area {
         top: 0.08rem;
+        left: 0.08rem;
         right: 0.08rem;
     }
 
     .postal-cell {
-        width: 0.12rem;
-        height: 0.16rem;
+        width: 0.2rem;
+        height: 0.22rem;
+        border: 1px solid #333;
     }
 
     .stamp-box {
-        width: 0.4rem;
-        height: 0.5rem;
+        width: 0.75rem;
+        height: 0.75rem;
+        margin-top: 0;
     }
 
     /* 小屏下字号略微缩小 */

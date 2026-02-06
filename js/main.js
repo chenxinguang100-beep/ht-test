@@ -166,6 +166,32 @@ const AppState = {
         }
     },
 
+    // 发送完成事件 (h5_card_completed)
+    // 用户点击"接受祝福"后调用，通知父容器交互完成
+    sendResult(params = {}) {
+        const msg = {
+            cmd: 'h5_card_completed',
+            content: {
+                status: 'completed',
+                greeting_words: this.config.greeting_words,
+                card_style: this.config.card_style,
+                recipient: this.config.recipient,
+                ...params
+            }
+        };
+
+        // 暴露全局变量，供外部读取
+        window.H5Result = msg;
+
+        // 向父容器发送消息（兼容 iframe 嵌入场景）
+        window.parent.postMessage(msg, '*');
+
+        // 同时发送到当前窗口（供 Mock 监听）
+        window.postMessage(msg, '*');
+
+        console.log('[H5] h5_card_completed sent:', msg);
+    },
+
     // 响应式布局：终极适配 (Zoom / Scale)
     setupResponsiveLayout() {
         const wrapper = document.getElementById('main-window'); // 目标改为 main-window
@@ -245,46 +271,81 @@ const AppState = {
         // Phase 1: 排队中 (HTML 初始状态)
         console.log('[Loading] Phase 1: Queueing...');
 
-        // 模拟资源预加载 (1.5s)
+        // 模拟资源预加载 (改为真实预加载)
         const doPreload = () => {
-            return new Promise((resolve) => {
-                // 这里模拟"生成排队"的耗时
-                setTimeout(resolve, 1500);
-            });
+            const promises = [];
+
+            // 1. 最小等待时间 (3秒)
+            promises.push(new Promise(resolve => setTimeout(resolve, 3000)));
+
+            // 2. 真实加载贺卡序列帧 (包含所有单词)
+            if (window.CardSystem && this.config) {
+                let words = this.config.greeting_words;
+                if (!Array.isArray(words)) words = [words];
+
+                words.forEach(wordKey => {
+                    promises.push(window.CardSystem.preloadFrames(this.config.card_style, wordKey));
+                });
+            }
+
+            // 3. 真实加载漂浮挂件素材 (针对所有单词)
+            if (window.FloaterSystem && this.config) {
+                let words = this.config.greeting_words;
+                if (!Array.isArray(words)) words = [words];
+
+                words.forEach(w => {
+                    promises.push(window.FloaterSystem.preloadAssets(this.config.card_style, w));
+                });
+            }
+
+            // 4. 加载背景图 (如果有)
+            if (this.configData && this.configData.styles && this.configData.styles[this.config.card_style]) {
+                const bgUrl = this.configData.styles[this.config.card_style].background;
+                if (bgUrl) {
+                    promises.push(new Promise(r => {
+                        const img = new Image();
+                        img.src = bgUrl;
+                        img.onload = img.onerror = r;
+                    }));
+                }
+            }
+
+            return Promise.all(promises);
         };
 
+        // 逻辑优化：
+        // 1. 保持 "排队中" 一小会儿 (500ms)
+        // 2. 切换到 "制作中" 并开始加载资源
+        // 3. 加载完成 -> "制作完成"
+
+        // 逻辑优化：
+        // 收到消息后立即切换到 "制作中" 并开始加载资源
+        // 不需要额外等待，因为 "排队中" 已经是初始状态
+
+        // Phase 2: 正在制作中
+        console.log('[Loading] Phase 2: Processing...');
+        overlayText.innerText = '正在制作中……很快完成';
+
+        // 开始加载资源
         doPreload().then(() => {
-            // Phase 2: 正在制作中 (3秒倒计时)
-            console.log('[Loading] Phase 2: Processing...');
-            overlayText.innerText = '正在制作中……很快完成';
+            // Phase 3: 制作完成
+            console.log('[Loading] Phase 3: Done!');
+            overlayText.innerText = '制作完成！';
+            overlayText.classList.add('highlight');
+            spinner.classList.add('hidden');
 
-            // 强制等待 3 秒
+            // 停留 0.8 秒展示“完成”
             setTimeout(() => {
-                // Phase 3: 制作完成
-                console.log('[Loading] Phase 3: Done!');
-                overlayText.innerText = '制作完成！';
-                overlayText.classList.add('highlight'); // 变绿/变大
-                spinner.classList.add('hidden'); // 隐藏圈圈
+                // Phase 4: Fade Out & Reveal
+                console.log('[Loading] Phase 4: Reveal');
+                overlay.classList.add('hidden');
 
-                // 停留 0.8 秒展示“完成”
+                if (coverPage) coverPage.classList.remove('hidden');
+
                 setTimeout(() => {
-                    // Phase 4: Fade Out & Reveal
-                    console.log('[Loading] Phase 4: Reveal');
-                    overlay.classList.add('hidden');
-
-                    // 显示封面
-                    if (coverPage) {
-                        coverPage.classList.remove('hidden');
-                    }
-
-                    // 彻底移除遮罩防止挡手
-                    setTimeout(() => {
-                        overlay.style.display = 'none';
-                    }, 800);
-
+                    overlay.style.display = 'none';
                 }, 800);
-
-            }, 3000); // 3s Processing
+            }, 800);
         });
     },
 

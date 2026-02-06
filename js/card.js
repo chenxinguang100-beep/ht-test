@@ -19,8 +19,9 @@ const CardSystem = {
     startFrame: 1,
 
     // 资源缓存
-    frameImages: [],
-    imagesLoaded: false,
+    // 结构： { "style_textKey": [Image, Image, ...] }
+    frameCache: {},
+    imagesLoaded: false, // 仅代表当前 active 的 key 是否加载完成
 
     // 辅助：绑定点击/触摸事件 (解决 300ms 延迟)
     addTapListener(element, callback) {
@@ -58,49 +59,59 @@ const CardSystem = {
         this.bindEvents();
     },
 
-    // 预加载序列帧
+    // 预加载序列帧 (Returns Promise)
     preloadFrames(styleName, textName) {
-        this.frameImages = [];
-        this.imagesLoaded = false;
-        let loadedCount = 0;
+        return new Promise((resolve, reject) => {
+            const style = styleName || 'frosted_blindbox';
+            const text = textName || '';
+            const cacheKey = `${style}_${text}`;
 
-        const style = styleName || 'frosted_blindbox';
-        const text = textName || '';
+            // 1. 检查缓存
+            if (this.frameCache[cacheKey] && this.frameCache[cacheKey].length === this.totalFrames) {
+                // simple check, assumes if length matches it's loaded
+                // For robust check we might need a flag per key
+                console.log(`[Card] Cache hit for ${cacheKey}`);
+                resolve();
+                return;
+            }
 
-        // 保存当前加载的组合标识，用于缓存检查
-        this.currentStyleText = `${style}_${text}`;
+            console.log(`[Card] Preloading frames for Key: ${cacheKey}`);
 
-        console.log(`[Card] Preloading frames for Style: ${style}, Text: ${text}`);
+            // 初始化缓存数组
+            this.frameCache[cacheKey] = [];
+            let loadedCount = 0;
+            let hasError = false;
 
-        for (let i = 1; i <= this.totalFrames; i++) {
-            const img = new Image();
-            // 序号补零，如 01, 02...
-            const frameIndex = i.toString().padStart(2, '0');
-            // 构造路径: assets/sequences/{style}/{text}/v1/{index}.jpg
-            const path = `assets/sequences/${style}/${text}/v1/${frameIndex}.jpg`;
-
-            img.src = path;
-            img.onload = () => {
-                loadedCount++;
+            const checkDone = () => {
                 if (loadedCount === this.totalFrames) {
-                    this.imagesLoaded = true;
-                    console.log(`[Card] All ${this.totalFrames} frames loaded successfully.`);
-                    if (this.modal && !this.modal.classList.contains('hidden')) {
-                        this.renderFrame();
-                        if (window.AppState.config.auto_play) {
-                            this.play();
-                        }
-                    }
+                    console.log(`[Card] All ${this.totalFrames} frames loaded for ${cacheKey}.`);
+                    resolve();
                 }
             };
-            img.onerror = () => {
-                // 如果特定路径加载失败，尝试加载默认兜底图
-                // 这里可以使用一个统一的默认图，或者保持 Loading 状态
-                console.warn(`[Card] Failed to load frame: ${path}. Attempting fallback...`);
-                // 可以在这里设置一个兜底路径，或者直接在渲染时处理
-            };
-            this.frameImages[i] = img;
-        }
+
+            for (let i = 1; i <= this.totalFrames; i++) {
+                const img = new Image();
+                // 序号补零，如 01, 02...
+                const frameIndex = i.toString().padStart(2, '0');
+                // 构造路径: assets/sequences/{style}/{text}/v1/{index}.jpg
+                const path = `assets/sequences/${style}/${text}/v1/${frameIndex}.jpg`;
+
+                img.src = path;
+                img.onload = () => {
+                    loadedCount++;
+                    checkDone();
+                };
+                img.onerror = () => {
+                    console.warn(`[Card] Failed to load frame: ${path}`);
+                    loadedCount++; // Count as done to avoid hanging
+                    hasError = true;
+                    checkDone();
+                };
+                // Store in cache at correct index (0-based or 1-based? Loop is 1-based)
+                // Let's use 1-based index to match logic
+                this.frameCache[cacheKey][i] = img;
+            }
+        });
     },
 
     bindEvents() {
@@ -123,6 +134,11 @@ const CardSystem = {
             }
 
             this.playClickEffect(cx, cy);
+
+            // 发送完成事件
+            if (window.AppState && window.AppState.sendResult) {
+                window.AppState.sendResult();
+            }
 
             // 延迟关闭，让特效展示一下 (400ms)
             setTimeout(() => {
@@ -375,7 +391,21 @@ const CardSystem = {
         const currentKey = floaterConfig.key || 'burger'; // fallback
         this.currentStyle = currentStyle;
         this.currentKey = currentKey;
-        this.preloadFrames(currentStyle, currentKey);
+
+        // 我们假设在 Open 之前已经通过 Preload 加载好了
+        // 但为了保险（比如直接 debug 打开），还是尝试加载一下
+        const cacheKey = `${currentStyle}_${currentKey}`;
+
+        // 检查当前 Key 是否有缓存
+        const hasCache = this.frameCache[cacheKey] && this.frameCache[cacheKey].length > 0;
+
+        if (!hasCache) {
+            console.log(`[Card] No cache for ${cacheKey}, loading now...`);
+            this.preloadFrames(currentStyle, currentKey).then(() => {
+                this.renderFrame();
+                if (window.AppState.config.auto_play) this.play();
+            });
+        }
 
         // 逻辑修改：起始帧设为第1张
         this.currentFrame = 1;
@@ -383,7 +413,12 @@ const CardSystem = {
         this.updateSlider();
 
         // 只有当图片已经加载完成时才立刻播放
-        if (this.imagesLoaded && window.AppState.config.auto_play) {
+        // Update imagesLoaded check: check if current key is ready
+        // Since preload is async promise, if we are here and cache exists, it's "loaded" (or loading in bg, but we assume preload logic handles completion before resolve if called externally. But here we just check raw existence).
+        // Actually, preloadFrames resolves when ALL done. 
+        // If we want sync play, we need to know if it's *fully* loaded.
+        // Simplified: just check if array exists in cache.
+        if (hasCache && window.AppState.config.auto_play) {
             this.play();
         }
     },
@@ -484,8 +519,11 @@ const CardSystem = {
         if (this.isPlaying) return;
 
         // 逻辑修改：检查图片是否加载完成，未加载则不播放
-        if (!this.imagesLoaded) {
-            console.log('[Card] Images not loaded, waiting...');
+        const cacheKey = `${this.currentStyle}_${this.currentKey}`;
+        const frames = this.frameCache[cacheKey];
+
+        if (!frames || frames.length === 0) {
+            console.log('[Card] Images not loaded (no cache), waiting...');
             return;
         }
 
@@ -515,7 +553,7 @@ const CardSystem = {
 
                 return; // 这一帧不渲染（或者保持最后一帧？）
                 // 如果 return，画面停留在 > totalFrames，renderFrame处理了吗？
-                // renderFrame img = this.frameImages[this.currentFrame]
+                // renderFrame img = frames[this.currentFrame]
                 // if currentFrame > totalFrames, img won't exist.
                 // So we should clamp rendering or keep last frame?
                 // Before pause, currentFrame was totalFrames.
@@ -579,7 +617,19 @@ const CardSystem = {
         this.ctx.clearRect(0, 0, width, height);
 
         // --- 绘制背景 (序列帧图片) ---
-        const img = this.frameImages[this.currentFrame];
+        const cacheKey = `${window.AppState.config.card_style}_${this.currentKey}`; // Use stored currentKey
+        // 注意：renderFrame会被 playInterval 调用，此时 this.currentKey 应该是被正确设置的
+        // 但是 renderFrame 也可能在 resize 时调用，或者 slider 拖动时
+        // 我们需要确保 this.currentKey 有值。在 open() 时设置了。
+        // 如果 init 后直接 render，可能会 undefined。
+        const keyToUse = this.currentKey || 'burger';
+        // 但 style 随着 config 变
+        const styleToUse = window.AppState.config.card_style;
+        const finalKey = `${styleToUse}_${keyToUse}`;
+
+        const frames = this.frameCache[finalKey];
+        const img = frames ? frames[this.currentFrame] : null;
+
         if (img && img.complete && img.naturalWidth !== 0) {
             // 图片加载成功，绘制图片
             // 保持比例铺满 (Cover 模式)

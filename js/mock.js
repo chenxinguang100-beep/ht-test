@@ -73,6 +73,13 @@ const MockSystem = {
                 </div>
 
                 <button id="mock-send-btn">发送指令 (Simulate PostMessage)</button>
+
+                <div class="form-group" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <label style="color: #888;">📤 事件监听</label>
+                    <div id="result-status" style="padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px; font-size: 12px; color: #999; border: 1px dashed rgba(255,255,255,0.2);">
+                        ⏳ 等待 h5_card_completed 事件...
+                    </div>
+                </div>
             </div>
         `;
     },
@@ -125,8 +132,32 @@ const MockSystem = {
             // 模拟发送
             window.postMessage(msg, '*');
 
+            // 重置 result 状态显示
+            const statusEl = document.getElementById('result-status');
+            if (statusEl) {
+                statusEl.style.color = '#999';
+                statusEl.style.borderColor = 'rgba(255,255,255,0.2)';
+                statusEl.innerHTML = '⏳ 等待 h5_card_completed 事件...';
+            }
+
             // 简单的反馈
             console.log('[Mock] Sent:', msg);
+        });
+
+        // 监听 h5_card_completed 事件
+        window.addEventListener('message', (event) => {
+            const msg = event.data;
+            if (msg && msg.cmd === 'h5_card_completed') {
+                const statusEl = document.getElementById('result-status');
+                if (statusEl) {
+                    statusEl.style.color = '#4caf50';
+                    statusEl.style.borderColor = '#4caf50';
+                    statusEl.innerHTML = `✅ 已收到完成事件<br>
+                        <small style="color:#888;">状态: ${msg.content.status}</small><br>
+                        <small style="color:#888;">风格: ${msg.content.card_style}</small>`;
+                }
+                console.log('[Mock] Received h5_card_completed:', msg);
+            }
         });
     }
 };
