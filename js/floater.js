@@ -61,6 +61,37 @@ const FloaterSystem = {
         this.refresh(window.AppState.config.greeting_words);
     },
 
+    // 预加载指定 Style + Word 的资源 (Returns Promise)
+    preloadAssets(styleName, wordKey) {
+        return new Promise((resolve) => {
+            const promises = [];
+
+            // 1. Lantern Image
+            // assets/sequences/{style}/{word}/lantern.png
+            const lanternPath = `assets/sequences/${styleName}/${wordKey}/lantern.png`;
+            promises.push(new Promise(r => {
+                const img = new Image();
+                img.src = lanternPath;
+                img.onload = img.onerror = r;
+            }));
+
+            // 2. Tag Image
+            // assets/tags/{style}/{word}.png
+            const tagStyle = (styleName === 'cyber_mecha') ? 'cyber_mecha' : 'frosted_blindbox';
+            const tagPath = `assets/tags/${tagStyle}/${wordKey}.png`;
+            promises.push(new Promise(r => {
+                const img = new Image();
+                img.src = tagPath;
+                img.onload = img.onerror = r;
+            }));
+
+            Promise.all(promises).then(() => {
+                console.log(`[Floater] Preloaded assets for ${styleName}/${wordKey}`);
+                resolve();
+            });
+        });
+    },
+
     // 获取单词配置 (Helper)
     getWordConfig(key) {
         if (!window.AppState.configData) return null;
