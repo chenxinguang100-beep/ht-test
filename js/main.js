@@ -172,15 +172,15 @@ const AppState = {
 
     // 发送 ready 事件（通知父容器 H5 已加载完成）
     sendReady() {
-        const msg = { cmd: 'ready' };
+        // 模仿核桃官方 H5 的消息格式，添加 source: 'h5'
+        const msg = {
+            source: 'h5',
+            cmd: 'ready'
+        };
 
         // 向父容器发送消息（触发 walnut_webview 的 onReady 回调）
-        // 尝试使用 window.top 以穿透可能的 iframe 嵌套
-        if (window.top) {
-            window.top.postMessage(msg, '*');
-        } else {
-            window.parent.postMessage(msg, '*');
-        }
+        // 根据 c2-legacy 源码，官方使用 window.parent.postMessage
+        window.parent.postMessage(msg, '*');
 
         // 同时发送到当前窗口（供 Mock 监听）
         window.postMessage(msg, '*');
@@ -192,6 +192,7 @@ const AppState = {
     // 用户点击"接受祝福"后调用，通知父容器交互完成
     sendResult(params = {}) {
         const msg = {
+            source: 'h5',
             cmd: 'h5_card_completed',
             content: {
                 status: 'completed',
@@ -206,11 +207,7 @@ const AppState = {
         window.H5Result = msg;
 
         // 向父容器发送消息（兼容 iframe 嵌入场景）
-        if (window.top) {
-            window.top.postMessage(msg, '*');
-        } else {
-            window.parent.postMessage(msg, '*');
-        }
+        window.parent.postMessage(msg, '*');
 
         // 同时发送到当前窗口（供 Mock 监听）
         window.postMessage(msg, '*');

@@ -101,14 +101,13 @@ const MockSystem = {
 
         // 发送 Ready 事件（模拟 H5 告知父容器已加载完成）
         document.getElementById('mock-ready-btn').addEventListener('click', () => {
-            const readyMsg = { cmd: 'ready' };
+            const readyMsg = {
+                source: 'h5',
+                cmd: 'ready'
+            };
 
             // 向父容器发送
-            if (window.top) {
-                window.top.postMessage(readyMsg, '*');
-            } else {
-                window.parent.postMessage(readyMsg, '*');
-            }
+            window.parent.postMessage(readyMsg, '*');
 
             console.log('[Mock] Ready event sent:', readyMsg);
             alert('✅ Ready 事件已发送！\n\n在真实环境中，Python 端收到此事件后会调用 _onReady() 发送配置。');
