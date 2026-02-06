@@ -40,6 +40,10 @@ const AppState = {
         // 显示初始 Loading 状态，等待消息 (不启动倒计时)
         this.showWaitingState();
 
+        // 发送 ready 事件给父容器（Python/IDE）
+        // 这会触发 walnut_webview 的 onReady 回调
+        this.sendReady();
+
         // 绑定封面页按钮事件
         const startBtn = document.getElementById('start-btn');
         if (startBtn) {
@@ -166,6 +170,24 @@ const AppState = {
         }
     },
 
+    // 发送 ready 事件（通知父容器 H5 已加载完成）
+    sendReady() {
+        const msg = { cmd: 'ready' };
+
+        // 向父容器发送消息（触发 walnut_webview 的 onReady 回调）
+        // 尝试使用 window.top 以穿透可能的 iframe 嵌套
+        if (window.top) {
+            window.top.postMessage(msg, '*');
+        } else {
+            window.parent.postMessage(msg, '*');
+        }
+
+        // 同时发送到当前窗口（供 Mock 监听）
+        window.postMessage(msg, '*');
+
+        console.log('[H5] Ready event sent:', msg);
+    },
+
     // 发送完成事件 (h5_card_completed)
     // 用户点击"接受祝福"后调用，通知父容器交互完成
     sendResult(params = {}) {
@@ -184,7 +206,11 @@ const AppState = {
         window.H5Result = msg;
 
         // 向父容器发送消息（兼容 iframe 嵌入场景）
-        window.parent.postMessage(msg, '*');
+        if (window.top) {
+            window.top.postMessage(msg, '*');
+        } else {
+            window.parent.postMessage(msg, '*');
+        }
 
         // 同时发送到当前窗口（供 Mock 监听）
         window.postMessage(msg, '*');
