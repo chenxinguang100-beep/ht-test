@@ -180,7 +180,13 @@ const AppState = {
 
         // 向父容器发送消息（触发 walnut_webview 的 onReady 回调）
         // 根据 c2-legacy 源码，官方使用 window.parent.postMessage
-        window.parent.postMessage(msg, '*');
+        // 但为了确保穿透 webview/iframe 嵌套，我们优先尝试 window.top
+        // 且必须包含 source: 'h5' 字段
+        if (window.top) {
+            window.top.postMessage(msg, '*');
+        } else {
+            window.parent.postMessage(msg, '*');
+        }
 
         // 同时发送到当前窗口（供 Mock 监听）
         window.postMessage(msg, '*');
@@ -206,8 +212,12 @@ const AppState = {
         // 暴露全局变量，供外部读取
         window.H5Result = msg;
 
-        // 向父容器发送消息（兼容 iframe 嵌入场景）
-        window.parent.postMessage(msg, '*');
+        // 向父容器发送消息（优先 window.top）
+        if (window.top) {
+            window.top.postMessage(msg, '*');
+        } else {
+            window.parent.postMessage(msg, '*');
+        }
 
         // 同时发送到当前窗口（供 Mock 监听）
         window.postMessage(msg, '*');

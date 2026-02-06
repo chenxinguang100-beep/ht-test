@@ -106,8 +106,12 @@ const MockSystem = {
                 cmd: 'ready'
             };
 
-            // 向父容器发送
-            window.parent.postMessage(readyMsg, '*');
+            // 向父容器发送 (优先 window.top)
+            if (window.top) {
+                window.top.postMessage(readyMsg, '*');
+            } else {
+                window.parent.postMessage(readyMsg, '*');
+            }
 
             console.log('[Mock] Ready event sent:', readyMsg);
             alert('✅ Ready 事件已发送！\n\n在真实环境中，Python 端收到此事件后会调用 _onReady() 发送配置。');
