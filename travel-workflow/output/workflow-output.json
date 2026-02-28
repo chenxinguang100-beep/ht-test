@@ -1,0 +1,1093 @@
+{
+  "status": "ok",
+  "startedAt": "2026-02-17T14:07:17.323Z",
+  "provider": "mock",
+  "transportMode": "driving",
+  "steps": [
+    {
+      "id": "coarse_guide",
+      "status": "done",
+      "data": {
+        "guideCount": 4,
+        "guides": [
+          {
+            "id": "coastal_scenic",
+            "title": "Coastal scenic loop",
+            "bullets": [
+              "Focus on coastline views and sunset windows.",
+              "Keep transfer hops short between bay-side points.",
+              "Prefer photo-friendly landmarks and boardwalks."
+            ],
+            "score": 5
+          },
+          {
+            "id": "seafood_foodie",
+            "title": "Seafood and local flavor",
+            "bullets": [
+              "Anchor the day with 2 meal moments and one dessert stop.",
+              "Use local signature foods as primary route points.",
+              "Keep queue risk manageable with alternatives."
+            ],
+            "score": 2
+          },
+          {
+            "id": "city_landmark",
+            "title": "Landmark and city icons",
+            "bullets": [
+              "Cover city-level landmarks with stable navigation.",
+              "Balance iconic spots and one lower-crowd backup.",
+              "Keep pacing medium for first-time visitors."
+            ],
+            "score": 2
+          },
+          {
+            "id": "family_relaxed",
+            "title": "Family relaxed route",
+            "bullets": [
+              "Lower walking pressure and keep indoor fallback points.",
+              "Avoid tight windows and over-packed schedule.",
+              "Prefer broad-space attractions and simple meals."
+            ],
+            "score": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "user_shortlist",
+      "status": "done",
+      "data": {
+        "selectedGuideIds": [
+          "coastal_scenic",
+          "seafood_foodie"
+        ]
+      }
+    },
+    {
+      "id": "poi_expansion",
+      "status": "done",
+      "data": {
+        "poiCount": 17,
+        "source": "mock"
+      }
+    },
+    {
+      "id": "clarification",
+      "status": "done",
+      "data": {
+        "ambiguityScore": 0,
+        "reasons": [],
+        "answers": {
+          "trip_focus": "mixed",
+          "crowd_tolerance": "medium",
+          "walking_tolerance": "medium"
+        }
+      }
+    },
+    {
+      "id": "theme_pack",
+      "status": "done",
+      "data": {
+        "packCount": 3,
+        "packs": [
+          {
+            "id": "pack_scenic",
+            "name": "Scenic first",
+            "itemCount": 7,
+            "rationale": [
+              "Prioritizes coastline and photo windows.",
+              "Reduces indoor time.",
+              "Fits relaxed and visual-heavy trips."
+            ]
+          },
+          {
+            "id": "pack_balanced",
+            "name": "Balanced day",
+            "itemCount": 7,
+            "rationale": [
+              "Mixes scenic and meal anchors.",
+              "Keeps route transitions steady.",
+              "Suitable as first draft for one-day trip."
+            ]
+          },
+          {
+            "id": "pack_food",
+            "name": "Food first",
+            "itemCount": 7,
+            "rationale": [
+              "Centers the route on food points.",
+              "Ensures meal options with backup candidates.",
+              "Keeps one or two scenic breaks."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "adopt_pack",
+      "status": "done",
+      "data": {
+        "selectedPackId": "pack_scenic",
+        "selectedPackName": "Scenic first"
+      }
+    },
+    {
+      "id": "route_plan",
+      "status": "done",
+      "data": {
+        "stopCount": 7,
+        "totalDistanceKm": 62.98,
+        "totalTravelMin": 125,
+        "totalDwellMin": 530
+      }
+    }
+  ],
+  "finishedAt": "2026-02-17T14:07:17.328Z",
+  "selectedPack": {
+    "id": "pack_scenic",
+    "name": "Scenic first",
+    "rationale": [
+      "Prioritizes coastline and photo windows.",
+      "Reduces indoor time.",
+      "Fits relaxed and visual-heavy trips."
+    ],
+    "slots": [
+      {
+        "primaryPoi": {
+          "id": "poi_yalong_bay_beach",
+          "name": "Yalong Bay Beach",
+          "city": "sanya",
+          "address": "Yalong Bay National Resort",
+          "coords": [
+            109.6308,
+            18.2296
+          ],
+          "category": "scenic",
+          "tags": [
+            "beach",
+            "view",
+            "photo",
+            "sunset"
+          ],
+          "rating": 4.8,
+          "priceLevel": "low",
+          "crowdLevel": "high",
+          "dwellMinutes": 90,
+          "guideIds": [
+            "coastal_scenic"
+          ]
+        },
+        "alternativePois": [
+          {
+            "id": "poi_sanya_bay_coconut_dream",
+            "name": "Sanya Bay Coconut Dream Corridor",
+            "city": "sanya",
+            "address": "Sanya Bay Coast",
+            "coords": [
+              109.4781,
+              18.2795
+            ],
+            "category": "scenic",
+            "tags": [
+              "bay boardwalk",
+              "sunset",
+              "easy walk",
+              "photo"
+            ],
+            "rating": 4.7,
+            "priceLevel": "low",
+            "crowdLevel": "medium",
+            "dwellMinutes": 80,
+            "guideIds": [
+              "coastal_scenic"
+            ]
+          },
+          {
+            "id": "poi_xiaodonghai_trail",
+            "name": "Xiaodonghai Coastal Trail",
+            "city": "sanya",
+            "address": "Xiaodonghai Bay",
+            "coords": [
+              109.5026,
+              18.2093
+            ],
+            "category": "scenic",
+            "tags": [
+              "easy walk",
+              "viewpoint",
+              "sunset",
+              "photo"
+            ],
+            "rating": 4.5,
+            "priceLevel": "low",
+            "crowdLevel": "low",
+            "dwellMinutes": 65,
+            "guideIds": [
+              "coastal_scenic"
+            ]
+          }
+        ],
+        "category": "scenic"
+      },
+      {
+        "primaryPoi": {
+          "id": "poi_sanya_bay_coconut_dream",
+          "name": "Sanya Bay Coconut Dream Corridor",
+          "city": "sanya",
+          "address": "Sanya Bay Coast",
+          "coords": [
+            109.4781,
+            18.2795
+          ],
+          "category": "scenic",
+          "tags": [
+            "bay boardwalk",
+            "sunset",
+            "easy walk",
+            "photo"
+          ],
+          "rating": 4.7,
+          "priceLevel": "low",
+          "crowdLevel": "medium",
+          "dwellMinutes": 80,
+          "guideIds": [
+            "coastal_scenic"
+          ]
+        },
+        "alternativePois": [
+          {
+            "id": "poi_yalong_bay_beach",
+            "name": "Yalong Bay Beach",
+            "city": "sanya",
+            "address": "Yalong Bay National Resort",
+            "coords": [
+              109.6308,
+              18.2296
+            ],
+            "category": "scenic",
+            "tags": [
+              "beach",
+              "view",
+              "photo",
+              "sunset"
+            ],
+            "rating": 4.8,
+            "priceLevel": "low",
+            "crowdLevel": "high",
+            "dwellMinutes": 90,
+            "guideIds": [
+              "coastal_scenic"
+            ]
+          },
+          {
+            "id": "poi_xiaodonghai_trail",
+            "name": "Xiaodonghai Coastal Trail",
+            "city": "sanya",
+            "address": "Xiaodonghai Bay",
+            "coords": [
+              109.5026,
+              18.2093
+            ],
+            "category": "scenic",
+            "tags": [
+              "easy walk",
+              "viewpoint",
+              "sunset",
+              "photo"
+            ],
+            "rating": 4.5,
+            "priceLevel": "low",
+            "crowdLevel": "low",
+            "dwellMinutes": 65,
+            "guideIds": [
+              "coastal_scenic"
+            ]
+          }
+        ],
+        "category": "scenic"
+      },
+      {
+        "primaryPoi": {
+          "id": "poi_haiyue_lounge",
+          "name": "Haiyue Sunset Lounge",
+          "city": "sanya",
+          "address": "Sanya Bay",
+          "coords": [
+            109.4428,
+            18.3026
+          ],
+          "category": "food",
+          "tags": [
+            "sunset",
+            "cafe",
+            "photo",
+            "dessert"
+          ],
+          "rating": 4.4,
+          "priceLevel": "high",
+          "crowdLevel": "low",
+          "dwellMinutes": 70,
+          "guideIds": [
+            "coastal_scenic",
+            "seafood_foodie"
+          ]
+        },
+        "alternativePois": [
+          {
+            "id": "poi_zhongfu_dessert_lab",
+            "name": "Zhongfu Dessert Lab",
+            "city": "sanya",
+            "address": "Yingbin Road",
+            "coords": [
+              109.4988,
+              18.2796
+            ],
+            "category": "food",
+            "tags": [
+              "dessert",
+              "photo",
+              "cafe"
+            ],
+            "rating": 4.1,
+            "priceLevel": "medium",
+            "crowdLevel": "low",
+            "dwellMinutes": 55,
+            "guideIds": [
+              "seafood_foodie"
+            ]
+          },
+          {
+            "id": "poi_houhai_seafood_street",
+            "name": "Houhai Seafood Street",
+            "city": "sanya",
+            "address": "Houhai Village",
+            "coords": [
+              109.7678,
+              18.3207
+            ],
+            "category": "food",
+            "tags": [
+              "seafood",
+              "local food",
+              "dinner"
+            ],
+            "rating": 4.6,
+            "priceLevel": "medium",
+            "crowdLevel": "medium",
+            "dwellMinutes": 90,
+            "guideIds": [
+              "seafood_foodie"
+            ]
+          }
+        ],
+        "category": "food"
+      },
+      {
+        "primaryPoi": {
+          "id": "poi_surfing_base_houhai",
+          "name": "Houhai Surfing Base",
+          "city": "sanya",
+          "address": "Houhai Village Beach",
+          "coords": [
+            109.7671,
+            18.3214
+          ],
+          "category": "activity",
+          "tags": [
+            "activity",
+            "beach",
+            "photo",
+            "tourist attraction"
+          ],
+          "rating": 4.5,
+          "priceLevel": "medium",
+          "crowdLevel": "medium",
+          "dwellMinutes": 110,
+          "guideIds": [
+            "coastal_scenic"
+          ]
+        },
+        "alternativePois": [
+          {
+            "id": "poi_haichang_fantasy_town",
+            "name": "Haichang Fantasy Town",
+            "city": "sanya",
+            "address": "Haitang Bay",
+            "coords": [
+              109.7471,
+              18.3339
+            ],
+            "category": "activity",
+            "tags": [
+              "family park",
+              "mall",
+              "night market"
+            ],
+            "rating": 4.1,
+            "priceLevel": "medium",
+            "crowdLevel": "medium",
+            "dwellMinutes": 100,
+            "guideIds": [
+              "seafood_foodie"
+            ]
+          }
+        ],
+        "category": "activity"
+      },
+      {
+        "primaryPoi": {
+          "id": "poi_zhongfu_dessert_lab",
+          "name": "Zhongfu Dessert Lab",
+          "city": "sanya",
+          "address": "Yingbin Road",
+          "coords": [
+            109.4988,
+            18.2796
+          ],
+          "category": "food",
+          "tags": [
+            "dessert",
+            "photo",
+            "cafe"
+          ],
+          "rating": 4.1,
+          "priceLevel": "medium",
+          "crowdLevel": "low",
+          "dwellMinutes": 55,
+          "guideIds": [
+            "seafood_foodie"
+          ]
+        },
+        "alternativePois": [
+          {
+            "id": "poi_haiyue_lounge",
+            "name": "Haiyue Sunset Lounge",
+            "city": "sanya",
+            "address": "Sanya Bay",
+            "coords": [
+              109.4428,
+              18.3026
+            ],
+            "category": "food",
+            "tags": [
+              "sunset",
+              "cafe",
+              "photo",
+              "dessert"
+            ],
+            "rating": 4.4,
+            "priceLevel": "high",
+            "crowdLevel": "low",
+            "dwellMinutes": 70,
+            "guideIds": [
+              "coastal_scenic",
+              "seafood_foodie"
+            ]
+          },
+          {
+            "id": "poi_houhai_seafood_street",
+            "name": "Houhai Seafood Street",
+            "city": "sanya",
+            "address": "Houhai Village",
+            "coords": [
+              109.7678,
+              18.3207
+            ],
+            "category": "food",
+            "tags": [
+              "seafood",
+              "local food",
+              "dinner"
+            ],
+            "rating": 4.6,
+            "priceLevel": "medium",
+            "crowdLevel": "medium",
+            "dwellMinutes": 90,
+            "guideIds": [
+              "seafood_foodie"
+            ]
+          }
+        ],
+        "category": "food"
+      },
+      {
+        "primaryPoi": {
+          "id": "poi_fenghuang_island_view",
+          "name": "Fenghuang Island View Deck",
+          "city": "sanya",
+          "address": "Fenghuang Island",
+          "coords": [
+            109.4896,
+            18.2334
+          ],
+          "category": "landmark",
+          "tags": [
+            "city icon",
+            "sunset",
+            "viewpoint"
+          ],
+          "rating": 4,
+          "priceLevel": "low",
+          "crowdLevel": "medium",
+          "dwellMinutes": 60,
+          "guideIds": [
+            "coastal_scenic"
+          ]
+        },
+        "alternativePois": [
+          {
+            "id": "poi_luhuitou_peak",
+            "name": "Luhuitou Peak Park",
+            "city": "sanya",
+            "address": "Luhuitou Scenic Area",
+            "coords": [
+              109.5022,
+              18.2143
+            ],
+            "category": "landmark",
+            "tags": [
+              "landmark",
+              "viewpoint",
+              "tourist attraction",
+              "city icon"
+            ],
+            "rating": 4.6,
+            "priceLevel": "medium",
+            "crowdLevel": "medium",
+            "dwellMinutes": 85,
+            "guideIds": [
+              "coastal_scenic"
+            ]
+          }
+        ],
+        "category": "landmark"
+      },
+      {
+        "primaryPoi": {
+          "id": "poi_xiaodonghai_trail",
+          "name": "Xiaodonghai Coastal Trail",
+          "city": "sanya",
+          "address": "Xiaodonghai Bay",
+          "coords": [
+            109.5026,
+            18.2093
+          ],
+          "category": "scenic",
+          "tags": [
+            "easy walk",
+            "viewpoint",
+            "sunset",
+            "photo"
+          ],
+          "rating": 4.5,
+          "priceLevel": "low",
+          "crowdLevel": "low",
+          "dwellMinutes": 65,
+          "guideIds": [
+            "coastal_scenic"
+          ]
+        },
+        "alternativePois": [
+          {
+            "id": "poi_yalong_bay_beach",
+            "name": "Yalong Bay Beach",
+            "city": "sanya",
+            "address": "Yalong Bay National Resort",
+            "coords": [
+              109.6308,
+              18.2296
+            ],
+            "category": "scenic",
+            "tags": [
+              "beach",
+              "view",
+              "photo",
+              "sunset"
+            ],
+            "rating": 4.8,
+            "priceLevel": "low",
+            "crowdLevel": "high",
+            "dwellMinutes": 90,
+            "guideIds": [
+              "coastal_scenic"
+            ]
+          },
+          {
+            "id": "poi_sanya_bay_coconut_dream",
+            "name": "Sanya Bay Coconut Dream Corridor",
+            "city": "sanya",
+            "address": "Sanya Bay Coast",
+            "coords": [
+              109.4781,
+              18.2795
+            ],
+            "category": "scenic",
+            "tags": [
+              "bay boardwalk",
+              "sunset",
+              "easy walk",
+              "photo"
+            ],
+            "rating": 4.7,
+            "priceLevel": "low",
+            "crowdLevel": "medium",
+            "dwellMinutes": 80,
+            "guideIds": [
+              "coastal_scenic"
+            ]
+          }
+        ],
+        "category": "scenic"
+      }
+    ],
+    "score": 153.6,
+    "estimatedDurationMinutes": 638,
+    "modeFit": {
+      "walking": 3,
+      "driving": 4,
+      "transit": 3
+    }
+  },
+  "routePlan": {
+    "transportMode": "driving",
+    "startTime": "09:00",
+    "totalDistanceKm": 62.97676274166029,
+    "totalTravelMin": 125,
+    "totalDwellMin": 530,
+    "estimatedEndTime": "19:55",
+    "stops": [
+      {
+        "poiId": "poi_yalong_bay_beach",
+        "name": "Yalong Bay Beach",
+        "category": "scenic",
+        "coords": [
+          109.6308,
+          18.2296
+        ],
+        "address": "Yalong Bay National Resort",
+        "arrivalTime": "09:00",
+        "leaveTime": "10:30",
+        "dwellMinutes": 90,
+        "travelFromPreviousKm": 0,
+        "travelFromPreviousMin": 0
+      },
+      {
+        "poiId": "poi_xiaodonghai_trail",
+        "name": "Xiaodonghai Coastal Trail",
+        "category": "scenic",
+        "coords": [
+          109.5026,
+          18.2093
+        ],
+        "address": "Xiaodonghai Bay",
+        "arrivalTime": "10:57",
+        "leaveTime": "12:02",
+        "dwellMinutes": 65,
+        "travelFromPreviousKm": 13.73,
+        "travelFromPreviousMin": 27
+      },
+      {
+        "poiId": "poi_fenghuang_island_view",
+        "name": "Fenghuang Island View Deck",
+        "category": "landmark",
+        "coords": [
+          109.4896,
+          18.2334
+        ],
+        "address": "Fenghuang Island",
+        "arrivalTime": "12:08",
+        "leaveTime": "13:08",
+        "dwellMinutes": 60,
+        "travelFromPreviousKm": 3.01,
+        "travelFromPreviousMin": 6
+      },
+      {
+        "poiId": "poi_zhongfu_dessert_lab",
+        "name": "Zhongfu Dessert Lab",
+        "category": "food",
+        "coords": [
+          109.4988,
+          18.2796
+        ],
+        "address": "Yingbin Road",
+        "arrivalTime": "13:18",
+        "leaveTime": "14:13",
+        "dwellMinutes": 55,
+        "travelFromPreviousKm": 5.23,
+        "travelFromPreviousMin": 10
+      },
+      {
+        "poiId": "poi_sanya_bay_coconut_dream",
+        "name": "Sanya Bay Coconut Dream Corridor",
+        "category": "scenic",
+        "coords": [
+          109.4781,
+          18.2795
+        ],
+        "address": "Sanya Bay Coast",
+        "arrivalTime": "14:17",
+        "leaveTime": "15:37",
+        "dwellMinutes": 80,
+        "travelFromPreviousKm": 2.19,
+        "travelFromPreviousMin": 4
+      },
+      {
+        "poiId": "poi_haiyue_lounge",
+        "name": "Haiyue Sunset Lounge",
+        "category": "food",
+        "coords": [
+          109.4428,
+          18.3026
+        ],
+        "address": "Sanya Bay",
+        "arrivalTime": "15:46",
+        "leaveTime": "16:56",
+        "dwellMinutes": 70,
+        "travelFromPreviousKm": 4.53,
+        "travelFromPreviousMin": 9
+      },
+      {
+        "poiId": "poi_surfing_base_houhai",
+        "name": "Houhai Surfing Base",
+        "category": "activity",
+        "coords": [
+          109.7671,
+          18.3214
+        ],
+        "address": "Houhai Village Beach",
+        "arrivalTime": "18:05",
+        "leaveTime": "19:55",
+        "dwellMinutes": 110,
+        "travelFromPreviousKm": 34.3,
+        "travelFromPreviousMin": 69
+      }
+    ]
+  },
+  "travelData": {
+    "meta": {
+      "title": "sanya one-day draft generated by local workflow",
+      "travelers": 2,
+      "baseSettings": {
+        "diningBudget": 600,
+        "transportBudget": 378,
+        "hotelTotal": 0
+      }
+    },
+    "inventory": {
+      "locations": {
+        "loc_poi_yalong_bay_beach": {
+          "name": "Yalong Bay Beach",
+          "address": "Yalong Bay National Resort",
+          "coords": [
+            109.6308,
+            18.2296
+          ],
+          "tags": [
+            "scenic",
+            "beach",
+            "view",
+            "photo",
+            "sunset"
+          ]
+        },
+        "loc_poi_sanya_bay_coconut_dream": {
+          "name": "Sanya Bay Coconut Dream Corridor",
+          "address": "Sanya Bay Coast",
+          "coords": [
+            109.4781,
+            18.2795
+          ],
+          "tags": [
+            "scenic",
+            "bay boardwalk",
+            "sunset",
+            "easy walk",
+            "photo"
+          ]
+        },
+        "loc_poi_xiaodonghai_trail": {
+          "name": "Xiaodonghai Coastal Trail",
+          "address": "Xiaodonghai Bay",
+          "coords": [
+            109.5026,
+            18.2093
+          ],
+          "tags": [
+            "scenic",
+            "easy walk",
+            "viewpoint",
+            "sunset",
+            "photo"
+          ]
+        },
+        "loc_poi_haiyue_lounge": {
+          "name": "Haiyue Sunset Lounge",
+          "address": "Sanya Bay",
+          "coords": [
+            109.4428,
+            18.3026
+          ],
+          "tags": [
+            "food",
+            "sunset",
+            "cafe",
+            "photo",
+            "dessert"
+          ]
+        },
+        "loc_poi_zhongfu_dessert_lab": {
+          "name": "Zhongfu Dessert Lab",
+          "address": "Yingbin Road",
+          "coords": [
+            109.4988,
+            18.2796
+          ],
+          "tags": [
+            "food",
+            "dessert",
+            "photo",
+            "cafe"
+          ]
+        },
+        "loc_poi_houhai_seafood_street": {
+          "name": "Houhai Seafood Street",
+          "address": "Houhai Village",
+          "coords": [
+            109.7678,
+            18.3207
+          ],
+          "tags": [
+            "food",
+            "seafood",
+            "local food",
+            "dinner"
+          ]
+        },
+        "loc_poi_surfing_base_houhai": {
+          "name": "Houhai Surfing Base",
+          "address": "Houhai Village Beach",
+          "coords": [
+            109.7671,
+            18.3214
+          ],
+          "tags": [
+            "activity",
+            "beach",
+            "photo",
+            "tourist attraction"
+          ]
+        },
+        "loc_poi_haichang_fantasy_town": {
+          "name": "Haichang Fantasy Town",
+          "address": "Haitang Bay",
+          "coords": [
+            109.7471,
+            18.3339
+          ],
+          "tags": [
+            "activity",
+            "family park",
+            "mall",
+            "night market"
+          ]
+        },
+        "loc_poi_fenghuang_island_view": {
+          "name": "Fenghuang Island View Deck",
+          "address": "Fenghuang Island",
+          "coords": [
+            109.4896,
+            18.2334
+          ],
+          "tags": [
+            "landmark",
+            "city icon",
+            "sunset",
+            "viewpoint"
+          ]
+        },
+        "loc_poi_luhuitou_peak": {
+          "name": "Luhuitou Peak Park",
+          "address": "Luhuitou Scenic Area",
+          "coords": [
+            109.5022,
+            18.2143
+          ],
+          "tags": [
+            "landmark",
+            "viewpoint",
+            "tourist attraction",
+            "city icon"
+          ]
+        }
+      },
+      "dining": {
+        "din_poi_haiyue_lounge": {
+          "name": "Haiyue Sunset Lounge",
+          "type": "dining",
+          "price": 220,
+          "locationId": "loc_poi_haiyue_lounge",
+          "tips": "rating: 4.4 | category: food"
+        },
+        "din_poi_zhongfu_dessert_lab": {
+          "name": "Zhongfu Dessert Lab",
+          "type": "dining",
+          "price": 120,
+          "locationId": "loc_poi_zhongfu_dessert_lab",
+          "tips": "rating: 4.1 | category: food"
+        },
+        "din_poi_houhai_seafood_street": {
+          "name": "Houhai Seafood Street",
+          "type": "dining",
+          "price": 120,
+          "locationId": "loc_poi_houhai_seafood_street",
+          "tips": "rating: 4.6 | category: food"
+        }
+      },
+      "activities": {
+        "act_poi_yalong_bay_beach": {
+          "name": "Yalong Bay Beach",
+          "type": "activity",
+          "price": 40,
+          "locationId": "loc_poi_yalong_bay_beach",
+          "tips": "rating: 4.8 | category: scenic"
+        },
+        "act_poi_sanya_bay_coconut_dream": {
+          "name": "Sanya Bay Coconut Dream Corridor",
+          "type": "activity",
+          "price": 40,
+          "locationId": "loc_poi_sanya_bay_coconut_dream",
+          "tips": "rating: 4.7 | category: scenic"
+        },
+        "act_poi_xiaodonghai_trail": {
+          "name": "Xiaodonghai Coastal Trail",
+          "type": "activity",
+          "price": 40,
+          "locationId": "loc_poi_xiaodonghai_trail",
+          "tips": "rating: 4.5 | category: scenic"
+        },
+        "act_poi_surfing_base_houhai": {
+          "name": "Houhai Surfing Base",
+          "type": "activity",
+          "price": 80,
+          "locationId": "loc_poi_surfing_base_houhai",
+          "tips": "rating: 4.5 | category: activity"
+        },
+        "act_poi_haichang_fantasy_town": {
+          "name": "Haichang Fantasy Town",
+          "type": "activity",
+          "price": 80,
+          "locationId": "loc_poi_haichang_fantasy_town",
+          "tips": "rating: 4.1 | category: activity"
+        },
+        "act_poi_fenghuang_island_view": {
+          "name": "Fenghuang Island View Deck",
+          "type": "activity",
+          "price": 40,
+          "locationId": "loc_poi_fenghuang_island_view",
+          "tips": "rating: 4 | category: landmark"
+        },
+        "act_poi_luhuitou_peak": {
+          "name": "Luhuitou Peak Park",
+          "type": "activity",
+          "price": 80,
+          "locationId": "loc_poi_luhuitou_peak",
+          "tips": "rating: 4.6 | category: landmark"
+        }
+      }
+    },
+    "itinerary": [
+      {
+        "day": 1,
+        "date": "2026-02-23",
+        "loc": "sanya",
+        "weather": "",
+        "stay": null,
+        "preparation": [],
+        "schedule": [
+          {
+            "time": "09:00",
+            "type": "activity",
+            "title": "Yalong Bay Beach",
+            "isChoice": true,
+            "default": "act_poi_yalong_bay_beach",
+            "options": [
+              "act_poi_yalong_bay_beach",
+              "act_poi_sanya_bay_coconut_dream",
+              "act_poi_xiaodonghai_trail"
+            ]
+          },
+          {
+            "time": "10:57",
+            "type": "activity",
+            "title": "Xiaodonghai Coastal Trail",
+            "isChoice": true,
+            "default": "act_poi_xiaodonghai_trail",
+            "options": [
+              "act_poi_xiaodonghai_trail",
+              "act_poi_yalong_bay_beach",
+              "act_poi_sanya_bay_coconut_dream"
+            ]
+          },
+          {
+            "time": "12:08",
+            "type": "activity",
+            "title": "Fenghuang Island View Deck",
+            "isChoice": true,
+            "default": "act_poi_fenghuang_island_view",
+            "options": [
+              "act_poi_fenghuang_island_view",
+              "act_poi_luhuitou_peak"
+            ]
+          },
+          {
+            "time": "13:18",
+            "type": "dining",
+            "title": "Zhongfu Dessert Lab",
+            "isChoice": true,
+            "default": "din_poi_zhongfu_dessert_lab",
+            "options": [
+              "din_poi_zhongfu_dessert_lab",
+              "din_poi_haiyue_lounge",
+              "din_poi_houhai_seafood_street"
+            ]
+          },
+          {
+            "time": "14:17",
+            "type": "activity",
+            "title": "Sanya Bay Coconut Dream Corridor",
+            "isChoice": true,
+            "default": "act_poi_sanya_bay_coconut_dream",
+            "options": [
+              "act_poi_sanya_bay_coconut_dream",
+              "act_poi_yalong_bay_beach",
+              "act_poi_xiaodonghai_trail"
+            ]
+          },
+          {
+            "time": "15:46",
+            "type": "dining",
+            "title": "Haiyue Sunset Lounge",
+            "isChoice": true,
+            "default": "din_poi_haiyue_lounge",
+            "options": [
+              "din_poi_haiyue_lounge",
+              "din_poi_zhongfu_dessert_lab",
+              "din_poi_houhai_seafood_street"
+            ]
+          },
+          {
+            "time": "18:05",
+            "type": "activity",
+            "title": "Houhai Surfing Base",
+            "isChoice": true,
+            "default": "act_poi_surfing_base_houhai",
+            "options": [
+              "act_poi_surfing_base_houhai",
+              "act_poi_haichang_fantasy_town"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

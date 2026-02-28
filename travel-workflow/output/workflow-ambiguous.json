@@ -1,0 +1,149 @@
+{
+  "status": "awaiting_clarification",
+  "startedAt": "2026-02-17T13:14:06.366Z",
+  "provider": "mock",
+  "transportMode": "transit",
+  "steps": [
+    {
+      "id": "coarse_guide",
+      "status": "done",
+      "data": {
+        "guideCount": 4,
+        "guides": [
+          {
+            "id": "coastal_scenic",
+            "title": "Coastal scenic loop",
+            "bullets": [
+              "Focus on coastline views and sunset windows.",
+              "Keep transfer hops short between bay-side points.",
+              "Prefer photo-friendly landmarks and boardwalks."
+            ],
+            "score": 0
+          },
+          {
+            "id": "seafood_foodie",
+            "title": "Seafood and local flavor",
+            "bullets": [
+              "Anchor the day with 2 meal moments and one dessert stop.",
+              "Use local signature foods as primary route points.",
+              "Keep queue risk manageable with alternatives."
+            ],
+            "score": 0
+          },
+          {
+            "id": "city_landmark",
+            "title": "Landmark and city icons",
+            "bullets": [
+              "Cover city-level landmarks with stable navigation.",
+              "Balance iconic spots and one lower-crowd backup.",
+              "Keep pacing medium for first-time visitors."
+            ],
+            "score": 0
+          },
+          {
+            "id": "family_relaxed",
+            "title": "Family relaxed route",
+            "bullets": [
+              "Lower walking pressure and keep indoor fallback points.",
+              "Avoid tight windows and over-packed schedule.",
+              "Prefer broad-space attractions and simple meals."
+            ],
+            "score": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "user_shortlist",
+      "status": "done",
+      "data": {
+        "selectedGuideIds": [
+          "coastal_scenic",
+          "seafood_foodie"
+        ]
+      }
+    },
+    {
+      "id": "poi_expansion",
+      "status": "done",
+      "data": {
+        "poiCount": 17,
+        "source": "mock"
+      }
+    },
+    {
+      "id": "clarification",
+      "status": "pending",
+      "data": {
+        "ambiguityScore": 0.8,
+        "reasons": [
+          "few_interests",
+          "pace_missing",
+          "budget_missing",
+          "companions_missing",
+          "coarse_choices_missing"
+        ],
+        "questions": [
+          {
+            "id": "trip_focus",
+            "title": "Trip focus",
+            "options": [
+              "scenic",
+              "food",
+              "mixed"
+            ]
+          },
+          {
+            "id": "crowd_tolerance",
+            "title": "Crowd tolerance",
+            "options": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "id": "walking_tolerance",
+            "title": "Walking tolerance",
+            "options": [
+              "short",
+              "medium",
+              "long"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "finishedAt": "2026-02-17T13:14:06.372Z",
+  "clarificationNeeded": true,
+  "clarificationQuestions": [
+    {
+      "id": "trip_focus",
+      "title": "Trip focus",
+      "options": [
+        "scenic",
+        "food",
+        "mixed"
+      ]
+    },
+    {
+      "id": "crowd_tolerance",
+      "title": "Crowd tolerance",
+      "options": [
+        "low",
+        "medium",
+        "high"
+      ]
+    },
+    {
+      "id": "walking_tolerance",
+      "title": "Walking tolerance",
+      "options": [
+        "short",
+        "medium",
+        "long"
+      ]
+    }
+  ]
+}

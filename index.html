@@ -1,157 +1,148 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>钢铁战意贺卡</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="backdrop" aria-hidden="true">
+      <span class="glow g1"></span>
+      <span class="glow g2"></span>
+      <span class="gridline"></span>
+    </div>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>H5动态贺卡</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/modal.css">
-</head>
+    <header class="hero">
+      <div class="hero-text">
+        <p class="eyebrow">勇猛大汉 · 不是粉嫩路线</p>
+        <h1>钢铁战意贺卡</h1>
+        <p>打造硬核风格的祝福卡片，让小天使从钢铁装甲里飘出来。</p>
+      </div>
+      <div class="hero-badge">
+        <span>战士级 · 2026</span>
+      </div>
+    </header>
 
-<body>
-    <!-- 舞台容器：核心展示区域 -->
-    <div id="stage-container">
-        <!-- 主窗口容器 (New) -->
-        <div id="main-window">
-            <!-- Mac 窗口标题栏装饰 (置顶) -->
-            <!-- Mac Window Header (Ported from Project B) -->
-            <div class="window-header">
-                <!-- 移除红黄绿按钮 -->
-                <div class="window-title">AI 动态贺卡</div>
+    <main class="layout">
+      <section class="card-wrap">
+        <div class="card" id="card">
+          <div class="card-top">
+            <div class="sigil" aria-hidden="true">
+              <svg viewBox="0 0 120 120" role="img" aria-label="战士徽章">
+                <defs>
+                  <linearGradient id="sigilGrad" x1="0" x2="1" y1="0" y2="1">
+                    <stop offset="0" stop-color="#d8b56a" />
+                    <stop offset="1" stop-color="#8f6c2f" />
+                  </linearGradient>
+                </defs>
+                <rect x="16" y="18" width="88" height="88" rx="18" fill="url(#sigilGrad)" opacity="0.18" />
+                <path d="M60 20l24 12v30c0 22-12 36-24 42-12-6-24-20-24-42V32l24-12z" fill="none" stroke="#d8b56a" stroke-width="4" />
+                <path d="M60 38l12 12-12 12-12-12 12-12z" fill="#d8b56a" />
+                <path d="M40 74l20-10 20 10" fill="none" stroke="#d8b56a" stroke-width="3" stroke-linecap="round" />
+              </svg>
             </div>
-
-            <!-- 核心舞台包裹层 -->
-            <div id="stage-wrapper">
-                <!-- 封面页 (现在是窗口内的内容) -->
-                <div id="cover-page" class="hidden"> <!-- 初始隐藏，等 Loading 结束后显示 -->
-                    <div class="cover-content">
-                        <div class="cover-title">献给 <span id="cover-recipient">亲爱的你</span> 的电子贺卡</div>
-                        <button id="start-btn" class="btn-cover-primary">放飞天灯</button>
-                    </div>
-                </div>
-
-                <!-- 加载遮罩层 (这是第一步显示的) -->
-                <div id="loading-overlay">
-                    <div class="loading-content">
-                        <div class="spinner"></div>
-                        <div id="loading-text" class="loading-text">生成排队中，请稍候……</div>
-                    </div>
-                </div>
-
-                <!-- 背景层 -->
-                <div id="background-layer"></div>
-
-                <!-- 漂浮挂件层 -->
-                <div id="floater-layer"></div>
-
-                <!-- 贺卡弹窗层 (放在 wrapper 内部以受圆角控制) -->
-                <div id="card-mask" class="hidden"></div>
-                <div id="card-modal" class="modal hidden">
-                    <!-- overlay moved out -->
-                    <div class="modal-content">
-                        <!-- 卡片主体 -->
-                        <div class="card-body">
-                            <!-- 左侧：动态贺图区 -->
-                            <div class="card-left">
-                                <div class="frame-player-container">
-                                    <canvas id="frame-canvas" width="360" height="480"></canvas>
-                                    <!-- 提示词切换按钮已移除 -->
-                                    <!-- 进度条悬浮在贺图底部 -->
-                                    <div class="slider-control floating-slider">
-                                        <input type="range" id="frame-slider" min="1" max="16" value="1" step="1">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 右侧：明信片文本区 -->
-                            <div class="card-right">
-                                <!-- 明信片纹理背景在 CSS 中处理 -->
-
-                                <!-- 邮戳区域（右上角） -->
-                                <div class="postcard-stamp-area">
-                                    <div class="postal-code">
-                                        <div class="postal-cell"></div>
-                                        <div class="postal-cell"></div>
-                                        <div class="postal-cell"></div>
-                                        <div class="postal-cell"></div>
-                                        <div class="postal-cell"></div>
-                                        <div class="postal-cell"></div>
-                                    </div>
-                                    <div class="stamp-box" id="stamp-box">
-                                        <!-- 邮票图标，后续动态渲染 -->
-                                        <div class="stamp-placeholder">邮票</div>
-                                    </div>
-                                </div>
-
-                                <!-- 收件人区域（始终可见） -->
-                                <div class="postcard-header">
-                                    <div class="field-to">To: <span id="card-recipient">妈妈</span></div>
-                                </div>
-
-                                <!-- 标题/拼音 + 内嵌迷你 Tab -->
-                                <div class="blessing-title-box">
-                                    <div id="card-pinyin" class="field-pinyin">mèng qù nà fú</div>
-                                    <div id="card-title" class="field-title">萌趣纳福</div>
-                                </div>
-
-                                <!-- 内容区域：单按钮切换 -->
-                                <div class="card-tab-content">
-                                    <!-- View 1: AI 寓意 (暖色卡片风格) -->
-                                    <div id="tab-meaning" class="tab-pane active">
-                                        <div class="meaning-card">
-                                            <div class="meaning-card-content">
-                                                <span class="meaning-label">AI寓意：</span>
-                                                <span class="meaning-text" id="meaning-content">--</span>
-                                            </div>
-                                            <div class="card-toggle-btn">
-                                                <button id="view-prompt-btn" class="btn-toggle">▶ 查看提示词</button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- View 2: 生图提示词 (科技终端风格) -->
-                                    <div id="tab-prompt" class="tab-pane">
-                                        <div class="prompt-terminal">
-                                            <div class="terminal-row">
-                                                <span class="terminal-label">Style:</span>
-                                                <span class="terminal-value" id="terminal-style">--</span>
-                                            </div>
-                                            <div class="terminal-row">
-                                                <span class="terminal-label">Prompt:</span>
-                                                <span class="terminal-value terminal-prompt-text"
-                                                    id="terminal-prompt">--</span>
-                                            </div>
-                                            <div class="card-toggle-btn terminal-toggle">
-                                                <button id="view-meaning-btn" class="btn-toggle btn-toggle-light">◆
-                                                    返回AI寓意</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 底部操作区 -->
-                                <div class="postcard-footer">
-                                    <button id="accept-btn" class="btn-primary hidden-initially">接受祝福</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="power-tag">
+              <span>战意等级</span>
+              <strong id="power-readout">70</strong>
             </div>
+          </div>
+
+          <div class="card-message">
+            <p class="line to" id="card-to">给：兄弟</p>
+            <h2 id="card-title">勇者之祝</h2>
+            <p class="line" id="card-line1">愿你披风猎猎，铁血不息。</p>
+            <p class="line" id="card-line2">每一次出征，都有归来之光。</p>
+            <p class="line from" id="card-from">— 你的战友</p>
+          </div>
+
+          <div class="card-footer">
+            <span class="stamp">钢铁誓言</span>
+            <span class="stamp">无畏 · 坚毅 · 荣耀</span>
+          </div>
+
+          <div class="angel" id="angel" aria-hidden="true">
+            <div class="angel-core">
+              <svg viewBox="0 0 120 140" role="img" aria-label="小天使">
+                <defs>
+                  <radialGradient id="halo" cx="0.5" cy="0.5" r="0.5">
+                    <stop offset="0" stop-color="#f7e7b1" />
+                    <stop offset="1" stop-color="#caa45f" />
+                  </radialGradient>
+                </defs>
+                <circle cx="60" cy="22" r="16" fill="url(#halo)" />
+                <circle cx="60" cy="30" r="12" fill="#f5f1e6" />
+                <rect x="48" y="42" width="24" height="38" rx="10" fill="#f1e7cf" />
+                <path class="wing wing-left" d="M44 48c-18 2-30 16-30 28 16 0 28-6 36-14-2-6-3-10-6-14z" fill="#e9d8b2" />
+                <path class="wing wing-right" d="M76 48c18 2 30 16 30 28-16 0-28-6-36-14 2-6 3-10 6-14z" fill="#e9d8b2" />
+                <path d="M52 80l8 22 8-22" fill="#d4b37b" />
+                <circle cx="52" cy="56" r="2.4" fill="#3b2f1b" />
+                <circle cx="68" cy="56" r="2.4" fill="#3b2f1b" />
+                <path d="M54 64c4 4 8 4 12 0" fill="none" stroke="#3b2f1b" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="rivet r1"></div>
+          <div class="rivet r2"></div>
+          <div class="rivet r3"></div>
+          <div class="rivet r4"></div>
         </div>
-    </div>
+        <p class="hint">点击右侧配置，调出硬派祝福。小天使会从盔甲上方飘起。</p>
+      </section>
 
-    <!-- 调试面板容器 (Mock System) -->
-    <div id="debug-panel" class="debug-panel collapsed">
-        <!-- 内容由 mock.js 动态生成 -->
-    </div>
+      <section class="panel">
+        <div class="panel-head">
+          <h3>贺卡配置</h3>
+          <button id="btn-fly" class="primary">放飞小天使</button>
+        </div>
 
-    <!-- 脚本引入 -->
-    <script src="js/main.js"></script>
-    <script src="js/floater.js"></script>
-    <script src="js/card.js"></script>
-    <script src="js/mock.js"></script>
-</body>
+        <div class="field">
+          <label for="input-to">收件人</label>
+          <input id="input-to" type="text" value="兄弟" />
+        </div>
+        <div class="field">
+          <label for="input-title">主标题</label>
+          <input id="input-title" type="text" value="勇者之祝" />
+        </div>
+        <div class="field">
+          <label for="input-line1">祝福语第一行</label>
+          <input id="input-line1" type="text" value="愿你披风猎猎，铁血不息。" />
+        </div>
+        <div class="field">
+          <label for="input-line2">祝福语第二行</label>
+          <input id="input-line2" type="text" value="每一次出征，都有归来之光。" />
+        </div>
+        <div class="field">
+          <label for="input-from">署名</label>
+          <input id="input-from" type="text" value="你的战友" />
+        </div>
 
+        <div class="field">
+          <label for="power-range">战意强度</label>
+          <input id="power-range" type="range" min="10" max="100" value="70" />
+        </div>
+
+        <div class="field toggle">
+          <input id="toggle-angel" type="checkbox" checked />
+          <label for="toggle-angel">显示小天使</label>
+        </div>
+
+        <div class="field toggle">
+          <input id="toggle-battle" type="checkbox" />
+          <label for="toggle-battle">战斗模式（更炽烈）</label>
+        </div>
+
+        <div class="panel-note">
+          <p>想要更勇猛？调高战意强度，背景与金属光泽会更有冲击力。</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>钢铁风格贺卡 · 本地渲染 · 一键生成</span>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
 </html>

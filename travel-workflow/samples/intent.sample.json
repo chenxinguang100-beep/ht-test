@@ -1,0 +1,27 @@
+{
+  "intent": {
+    "city": "sanya",
+    "date": "2026-02-23",
+    "startTime": "09:00",
+    "transportMode": "driving",
+    "interests": ["beach", "food", "photo"],
+    "budget": "medium",
+    "pace": "relaxed",
+    "companions": "couple",
+    "travelers": 2
+  },
+  "preferences": {
+    "coarseGuideChoices": ["coastal_scenic", "seafood_foodie"],
+    "mustInclude": ["sunset"],
+    "avoid": ["mall"],
+    "clarificationAnswers": {
+      "trip_focus": "mixed",
+      "crowd_tolerance": "medium",
+      "walking_tolerance": "medium"
+    }
+  },
+  "execution": {
+    "provider": "mock",
+    "targetPoiCount": 7
+  }
+}

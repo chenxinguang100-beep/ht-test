@@ -1,0 +1,16 @@
+{
+  "intent": {
+    "city": "sanya",
+    "date": "2026-02-23",
+    "startTime": "10:00",
+    "transportMode": "transit",
+    "interests": ["fun"]
+  },
+  "preferences": {
+    "coarseGuideChoices": []
+  },
+  "execution": {
+    "provider": "mock",
+    "targetPoiCount": 6
+  }
+}
