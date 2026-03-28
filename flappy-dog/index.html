@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flappy Dog 🐕</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="wrapper">
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+
+    <!-- 开始界面 -->
+    <div id="startScreen" class="screen">
+      <h1>Flappy Dog</h1>
+      <div class="subtitle">圆滚滚柴犬大冒险</div>
+      <div class="instructions">
+        <p>🎤 发出声音 → 柴犬前进</p>
+        <p>🔊 大声喊叫 → 柴犬起跳</p>
+        <p>🤫 保持安静 → 低头通过障碍</p>
+      </div>
+      <button id="startBtn">开始游戏</button>
+      <div class="mic-note">游戏需要麦克风权限</div>
+    </div>
+
+    <!-- 游戏 HUD -->
+    <div id="hud" class="hidden">
+      <div id="scoreDisplay">得分: <span id="score">0</span></div>
+      <div id="micIndicator">
+        <span id="micIcon">🎤</span>
+        <div id="volumeBarWrap">
+          <div id="jumpLine"></div>
+          <div id="volumeBar"></div>
+        </div>
+        <span id="pitchDisplay"></span>
+      </div>
+    </div>
+
+    <!-- 游戏结束界面 -->
+    <div id="gameOverScreen" class="screen hidden">
+      <h2>游戏结束！</h2>
+      <div id="finalScore"></div>
+      <div id="bestScore"></div>
+      <button id="restartBtn">再来一次</button>
+    </div>
+  </div>
+
+  <script src="js/audio.js"></script>
+  <script src="js/dog.js"></script>
+  <script src="js/obstacles.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
