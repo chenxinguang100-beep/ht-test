@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎵 Loop 工坊</title>
+  <link rel="stylesheet" href="./css/app.css">
+  <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- 顶部控制栏 -->
+    <header class="top-bar">
+      <div class="brand">
+        <span class="logo">🎵</span>
+        <span class="title">Loop 工坊</span>
+      </div>
+
+      <div class="transport">
+        <button id="btn-play"  class="btn primary">▶ 播放</button>
+        <button id="btn-stop"  class="btn">⏹ 停止</button>
+        <button id="btn-clear" class="btn">🧹 清空</button>
+        <button id="btn-random" class="btn">🎲 随机</button>
+      </div>
+
+      <div class="controls">
+        <label class="ctrl">
+          <span>调式</span>
+          <select id="sel-mode">
+            <option value="major">大调 Major</option>
+            <option value="natural_minor">自然小调</option>
+            <option value="harmonic_minor">和声小调</option>
+            <option value="melodic_minor">旋律小调</option>
+            <option value="dorian">多利亚</option>
+            <option value="mixolydian">混合利底亚</option>
+          </select>
+        </label>
+
+        <label class="ctrl">
+          <span>主音</span>
+          <select id="sel-root">
+            <option value="60">C</option>
+            <option value="61">C#/Db</option>
+            <option value="62">D</option>
+            <option value="63">D#/Eb</option>
+            <option value="64">E</option>
+            <option value="65">F</option>
+            <option value="66">F#/Gb</option>
+            <option value="67">G</option>
+            <option value="68">G#/Ab</option>
+            <option value="69">A</option>
+            <option value="70">A#/Bb</option>
+            <option value="71">B</option>
+          </select>
+        </label>
+
+        <label class="ctrl">
+          <span>速度 <b id="lbl-bpm">110</b> BPM</span>
+          <input id="inp-bpm" type="range" min="60" max="180" step="1" value="110">
+        </label>
+
+        <label class="ctrl">
+          <span>移调 <b id="lbl-trans">0</b> 半音</span>
+          <input id="inp-transpose" type="range" min="-12" max="12" step="1" value="0">
+        </label>
+      </div>
+
+      <div class="pending-indicator" id="pending-indicator">
+        <span class="dot"></span>
+        <span class="text">下一小节生效</span>
+      </div>
+    </header>
+
+    <!-- 节拍指示条 -->
+    <div class="beat-bar">
+      <div class="beat-cells" id="beat-cells"></div>
+      <span class="position" id="position-label">0 : 0 : 0</span>
+    </div>
+
+    <!-- 舞台 -->
+    <section class="stage" id="stage"></section>
+
+    <!-- 卡片架 -->
+    <section class="rack" id="rack"></section>
+
+    <!-- 启动提示 -->
+    <div id="start-mask" class="start-mask">
+      <div class="start-card">
+        <h1>🎵 Loop 工坊</h1>
+        <p>一个 Incredibox 风格的互动音乐实验室</p>
+        <ul>
+          <li>🥁 节奏 · 🎸 低音 · 🎶 和声 · 🎹 主旋律，32 段 Loop 自由组合</li>
+          <li>支持 6 种调式切换、移调、变速</li>
+          <li>所有变更在<b>下一小节</b>自动对齐生效</li>
+        </ul>
+        <button id="btn-enter" class="btn primary big">🎧 开始演奏</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
